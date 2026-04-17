@@ -155,7 +155,6 @@ export default function App() {
   }, [currentIndex, swipeDirection, isTyping]);
 
   const startJourney = () => {
-    if (!userData.name || !userData.phone || !userData.age) return;
     setScreen('swipe');
     setIsTyping(true);
   };
@@ -166,7 +165,7 @@ export default function App() {
         const base = score * 1000;
         const randomBonus = score > 0 ? Math.floor(Math.random() * 500) : 0;
         setFinalFictitiousPoints(base + randomBonus);
-        setScreen('result');
+        setScreen('registration');
       }, 3000);
       return () => clearTimeout(timer);
     }
@@ -187,6 +186,7 @@ export default function App() {
   }, [screen, finalFictitiousPoints]);
 
   const pushToSupabase = async () => {
+    if (!userData.name || !userData.phone || !userData.age) return;
     setIsSaving(true);
     try {
       await supabase.from('matches').insert([{
@@ -195,14 +195,27 @@ export default function App() {
         age: parseInt(userData.age),
         points: finalFictitiousPoints
       }]);
-      const { data } = await supabase.from('matches').select('name, points').order('points', { ascending: false }).limit(10);
+      // After saving, we show the result screen (points)
+      setScreen('result');
+    } catch (err) {
+      console.error(err);
+      setScreen('result'); 
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const goToMural = async () => {
+    try {
+      const { data } = await supabase.from('matches')
+        .select('name, points')
+        .order('points', { ascending: false })
+        .limit(10);
       setRanking(data || []);
       setScreen('mural');
     } catch (err) {
       console.error(err);
-      setScreen('mural'); // Fallback to mural even on error
-    } finally {
-      setIsSaving(false);
+      setScreen('mural');
     }
   };
 
@@ -225,26 +238,24 @@ export default function App() {
           </div>
 
           <div style={{width: '100%', maxWidth: '300px', margin: '0 auto'}}>
-            <label className="input-label" style={{textAlign: 'center', display: 'block'}}>Como se chama?</label>
-            <input 
-              className="input-field" 
-              placeholder="Digite seu nome..." 
-              value={userData.name}
-              onChange={e => setUserData({...userData, name: e.target.value})}
-            />
-            <button className="btn-primary" style={{width: '100%'}} onClick={() => userData.name && setScreen('registration')}>
+            <button className="btn-primary" style={{width: '100%'}} onClick={() => setScreen('swipe')}>
               Começar jornada <ChevronRight size={18} />
             </button>
           </div>
-          <p style={{marginTop: '2rem', fontSize: '0.8rem', opacity: 0.6, fontWeight: 700, letterSpacing: '1px'}}>CLIQUE NO CORAÇÃO PARA ESCOLHER</p>
+          <p style={{marginTop: '2rem', fontSize: '0.9rem', opacity: 0.8, fontWeight: 800, letterSpacing: '1.5px', color: 'var(--gold)'}}>CLIQUE NO CORAÇÃO PARA ESCOLHER</p>
         </div>
       )}
 
       {screen === 'registration' && (
         <div className="screen" style={{justifyContent: 'center', textAlign: 'left'}}>
-          <h2 style={{color: '#fff', fontSize: '2.4rem', marginBottom: '1.5rem'}}>Olá, {formatName(userData.name)}!</h2>
-          <p style={{color: 'var(--text-muted)', marginBottom: '2.5rem', fontSize: '1.1rem'}}>Complete para entrarmos em sintonia:</p>
+          <h2 style={{color: '#fff', fontSize: '2.4rem', marginBottom: '1rem'}}>Quase lá!</h2>
+          <p style={{color: 'var(--text-muted)', marginBottom: '2.5rem', fontSize: '1.1rem'}}>Deixe seus dados para ver o seu resultado:</p>
           
+          <div className="form-group">
+            <label className="input-label"><User size={14}/> Como se chama?</label>
+            <input className="input-field" type="text" placeholder="Seu nome" value={userData.name} onChange={e => setUserData({...userData, name: e.target.value})} />
+          </div>
+
           <div className="form-group">
             <label className="input-label"><Phone size={14}/> Whatsapp</label>
             <input className="input-field" type="tel" placeholder="(00) 00000-0000" value={userData.phone} onChange={e => setUserData({...userData, phone: e.target.value})} />
@@ -255,8 +266,8 @@ export default function App() {
             <input className="input-field" type="number" placeholder="Sua idade" value={userData.age} onChange={e => setUserData({...userData, age: e.target.value})} />
           </div>
 
-          <button className="btn-primary" style={{width: '100%', marginTop: '1rem'}} onClick={startJourney}>
-            Estou pronto! 🔥
+          <button className="btn-primary" style={{width: '100%', marginTop: '1rem'}} onClick={pushToSupabase} disabled={isSaving}>
+            {isSaving ? "Eternizando..." : "Ver meu Match 🔥"}
           </button>
         </div>
       )}
@@ -313,8 +324,8 @@ export default function App() {
                 : `${firstName}, existe uma semente de eternidade brotando no seu coração.`}
             </p>
           </div>
-          <button className="btn-primary" style={{marginTop: '3rem', width: '100%'}} onClick={pushToSupabase} disabled={isSaving}>
-            {isSaving ? "Eternizando..." : "Ver Mural do Ardor"}
+          <button className="btn-primary" style={{marginTop: '3rem', width: '100%'}} onClick={goToMural}>
+            Ver Mural do Ardor
           </button>
         </div>
       )}
