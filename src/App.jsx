@@ -121,6 +121,7 @@ export default function App() {
   const [isSaving, setIsSaving] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingMural, setIsLoadingMural] = useState(false);
+  const [muralError, setMuralError] = useState(null);
 
   const [userData, setUserData] = useState({ name: '', phone: '', age: '' });
   const [displayedPoints, setDisplayedPoints] = useState(0);
@@ -208,6 +209,7 @@ export default function App() {
 
   const goToMural = async () => {
     setIsLoadingMural(true);
+    setMuralError(null);
     setScreen('mural');
     try {
       const { data, error } = await supabase
@@ -215,10 +217,19 @@ export default function App() {
         .select('name, points')
         .order('points', { ascending: false })
         .limit(100);
-      if (error) throw error;
-      setRanking(data || []);
+      console.log('[Mural] data:', data, 'error:', error);
+      if (error) {
+        setMuralError(`Erro Supabase: ${error.message}`);
+        setRanking([]);
+      } else {
+        setRanking(data || []);
+        if (!data || data.length === 0) {
+          setMuralError('Nenhum cadastro encontrado ainda.');
+        }
+      }
     } catch (err) {
       console.error('Erro ao buscar ranking:', err);
+      setMuralError(`Erro: ${err.message}`);
       setRanking([]);
     } finally {
       setIsLoadingMural(false);
@@ -364,7 +375,16 @@ export default function App() {
           ) : (
             <div className="ranking-container" style={{overflowY: 'auto', flex: 1, maxHeight: '100%'}}>
               {ranking.length === 0 ? (
-                <p style={{textAlign: 'center', color: '#666', padding: '2rem'}}>Seja o primeiro a entrar no Mural! 🔥</p>
+                <div style={{textAlign: 'center', padding: '2rem'}}>
+                  {muralError ? (
+                    <>
+                      <p style={{color: '#ff4444', fontSize: '0.9rem', marginBottom: '0.5rem'}}>⚠️ {muralError}</p>
+                      <p style={{color: '#666', fontSize: '0.8rem'}}>Verifique RLS no Supabase (SELECT deve estar liberado para anon)</p>
+                    </>
+                  ) : (
+                    <p style={{color: '#666'}}>Seja o primeiro a entrar no Mural! 🔥</p>
+                  )}
+                </div>
               ) : (
                 ranking.map((r, i) => (
                   <div key={i} className={`ranking-item ${formatName(r.name) === firstName ? 'current' : ''}`}>
