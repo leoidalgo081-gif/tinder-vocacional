@@ -226,23 +226,30 @@ export default function App() {
       <ParticleBackground />
 
       {screen === 'welcome' && (
-        <div className="screen welcome-screen">
-          <header className="premium-header" style={{ position: 'absolute', top: '3rem', width: '100%', left: 0 }}>
-            <h1 style={{fontSize: '2.5rem', marginBottom: '0.2rem', textAlign: 'center'}}>Tinder Vocacional</h1>
-            <div className="card-divider" style={{margin: '0 auto', width: '60px'}}></div>
+        <div className="screen welcome-screen" style={{ paddingTop: '8rem' }}>
+          <header style={{ position: 'absolute', top: '3.5rem', width: '100%', textAlign: 'center' }}>
+            <p style={{ color: 'var(--gold)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', fontSize: '0.9rem' }}>Tinder Vocacional</p>
+            <div className="card-divider" style={{ margin: '0.5rem auto', width: '30px' }}></div>
           </header>
           
-          <div className="logo-wrapper">
+          <div className="logo-wrapper" style={{ marginBottom: '1.5rem' }}>
             <div className="logo-aura"></div>
-            <img src={logo} alt="Shalom" className="welcome-logo" />
+            <img src={logo} alt="Shalom" className="welcome-logo" style={{ width: '150px' }} />
           </div>
 
-          <div style={{width: '100%', maxWidth: '300px', margin: '0 auto'}}>
-            <button className="btn-primary" style={{width: '100%'}} onClick={() => setScreen('swipe')}>
+          <h1 style={{ fontSize: '2.4rem', fontWeight: 900, marginBottom: '1.5rem', padding: '0 1rem' }}>
+            Será que sinto atração pelo Carisma Shalom?
+          </h1>
+
+          <div style={{ width: '100%', maxWidth: '300px', margin: '0 auto' }}>
+            <button className="btn-primary" style={{ width: '100%' }} onClick={() => setScreen('swipe')}>
               Começar jornada <ChevronRight size={18} />
             </button>
           </div>
-          <p style={{marginTop: '2rem', fontSize: '0.9rem', opacity: 0.8, fontWeight: 800, letterSpacing: '1.5px', color: 'var(--gold)'}}>CLIQUE NO CORAÇÃO PARA ESCOLHER</p>
+          
+          <p style={{ marginTop: '2.5rem', fontSize: '0.85rem', opacity: 0.9, fontWeight: 800, letterSpacing: '1px', color: 'var(--gold)', lineHeight: 1.5 }}>
+            SE SEU CORAÇÃO ARDER,<br/>CLIQUE NO CORAÇÃO PARA ESCOLHER
+          </p>
         </div>
       )}
 
