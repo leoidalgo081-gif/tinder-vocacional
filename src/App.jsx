@@ -244,12 +244,11 @@ export default function App() {
           </h1>
 
           <p className="welcome-subtitle">
-            Faça o teste pra ver se você tem<br/>
-            match com o Carisma Shalom! 🔥
+            Faça o teste pra ver se você tem match com o Carisma Shalom! 🔥
           </p>
 
           <div style={{ width: '100%', maxWidth: '320px', margin: '0 auto' }}>
-            <button className="btn-primary" style={{ width: '100%' }} onClick={() => setScreen('swipe')}>
+            <button className="btn-primary" style={{ width: '100%', whiteSpace: 'nowrap' }} onClick={() => setScreen('swipe')}>
               COMEÇAR A JORNADA
             </button>
           </div>
