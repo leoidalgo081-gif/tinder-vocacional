@@ -50,7 +50,7 @@ const BurningXIcon = ({ size = 48 }) => (
   </svg>
 );
 
-const TypewriterText = ({ text, speed = 45, onComplete }) => {
+const TypewriterText = React.memo(({ text, speed = 45, onComplete }) => {
   const [displayedText, setDisplayedText] = useState('');
   
   useEffect(() => {
@@ -58,7 +58,12 @@ const TypewriterText = ({ text, speed = 45, onComplete }) => {
     let index = 0;
     setDisplayedText('');
     
+    // Safety check to prevent double typing in React Strict Mode or fast re-renders
+    let isCancelled = false;
+
     const interval = setInterval(() => {
+      if (isCancelled) return;
+      
       if (index < text.length) {
         currentText += text.charAt(index);
         setDisplayedText(currentText);
@@ -69,11 +74,14 @@ const TypewriterText = ({ text, speed = 45, onComplete }) => {
       }
     }, speed);
     
-    return () => clearInterval(interval);
+    return () => {
+      isCancelled = true;
+      clearInterval(interval);
+    };
   }, [text, speed, onComplete]);
 
   return <span>{displayedText}</span>;
-};
+});
 
 const ParticleBackground = React.memo(() => {
   const [particles, setParticles] = useState([]);
@@ -116,6 +124,10 @@ export default function App() {
   const [ranking, setRanking] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isTyping, setIsTyping] = useState(true);
+
+  const handleTypingComplete = useCallback(() => {
+    setIsTyping(false);
+  }, []);
   
   // Drag State
   const [dragX, setDragX] = useState(0);
@@ -359,7 +371,7 @@ export default function App() {
                <p className="card-text">
                  <TypewriterText 
                    text={QUESTIONS[currentIndex].text} 
-                   onComplete={() => setIsTyping(false)} 
+                   onComplete={handleTypingComplete} 
                  />
                </p>
                <div className="card-divider" style={{ zIndex: 2 }}></div>
