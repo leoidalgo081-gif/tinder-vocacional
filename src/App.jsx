@@ -214,7 +214,7 @@ export default function App() {
         .from('matches')
         .select('name, points')
         .order('points', { ascending: false })
-        .limit(10);
+        .limit(100);
       if (error) throw error;
       setRanking(data || []);
     } catch (err) {
@@ -352,8 +352,9 @@ export default function App() {
       )}
 
       {screen === 'mural' && (
-        <div className="screen">
-          <h2 style={{fontSize: '2.4rem', color: 'var(--gold)', marginBottom: '1.5rem'}}>Mural Vocacional 🔥</h2>
+        <div className="screen" style={{display: 'flex', flexDirection: 'column', overflow: 'hidden', paddingBottom: '1rem'}}>
+          <h2 style={{fontSize: '2rem', color: 'var(--gold)', marginBottom: '0.5rem', flexShrink: 0}}>Mural Vocacional 🔥</h2>
+          <p style={{color: 'rgba(255,255,255,0.3)', fontSize: '0.72rem', textAlign: 'center', marginBottom: '1rem', letterSpacing: '1px', flexShrink: 0}}>ARRASTE PARA VER TODOS ↕</p>
           
           {isLoadingMural ? (
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', marginTop: '3rem'}}>
@@ -361,7 +362,7 @@ export default function App() {
               <p style={{color: 'var(--gold)', fontWeight: 700, opacity: 0.8}}>Carregando ardor global...</p>
             </div>
           ) : (
-            <div className="ranking-container">
+            <div className="ranking-container" style={{overflowY: 'auto', flex: 1, maxHeight: '100%'}}>
               {ranking.length === 0 ? (
                 <p style={{textAlign: 'center', color: '#666', padding: '2rem'}}>Seja o primeiro a entrar no Mural! 🔥</p>
               ) : (
@@ -377,7 +378,7 @@ export default function App() {
             </div>
           )}
 
-          <button className="btn-primary" style={{width: '100%', marginTop: 'auto', whiteSpace: 'nowrap'}} onClick={() => setScreen('missao')}>
+          <button className="btn-primary" style={{width: '100%', whiteSpace: 'nowrap', flexShrink: 0}} onClick={() => setScreen('missao')}>
             O que Deus me diz agora?
           </button>
         </div>

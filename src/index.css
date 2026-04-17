@@ -1090,3 +1090,44 @@ h2 {
   text-align: center;
   text-shadow: 0 0 15px var(--red-bright);
 }
+
+/* ─── Mural / Ranking ─── */
+.ranking-container {
+  background: rgba(255,255,255,0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.07);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  margin-bottom: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212,175,55,0.3) transparent;
+}
+
+.ranking-container::-webkit-scrollbar {
+  width: 4px;
+}
+.ranking-container::-webkit-scrollbar-thumb {
+  background: rgba(212,175,55,0.35);
+  border-radius: 4px;
+}
+
+.ranking-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.9rem 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-weight: 600;
+}
+
+.ranking-item:last-child {
+  border-bottom: none;
+}
+
+.ranking-item.current {
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 8px;
+  border-left: 3px solid var(--gold);
+  color: var(--gold);
+}
