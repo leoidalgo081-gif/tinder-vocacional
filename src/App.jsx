@@ -50,6 +50,26 @@ const BurningXIcon = ({ size = 48 }) => (
   </svg>
 );
 
+const TypewriterText = ({ text, speed = 30 }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  
+  useEffect(() => {
+    setDisplayedText('');
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index < text.length) {
+        setDisplayedText(prev => prev + text.charAt(index));
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+
+  return <span>{displayedText}</span>;
+};
+
 const ParticleBackground = React.memo(() => {
   const [particles, setParticles] = useState([]);
 
@@ -293,7 +313,7 @@ export default function App() {
           
           <h1 style={{ marginBottom: '1rem', fontSize: '2.5rem' }}>Será que sinto atração pelo Carisma Shalom?</h1>
           <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem', marginBottom: '2.5rem', fontWeight: 500, lineHeight: 1.5 }}>
-            Faça o teste, se seu coração arder arraste para direita!
+            Faça o teste: clique no coração se o seu coração arder! ❤️🔥
           </p>
           <button className="btn-primary btn-small" onClick={() => setScreen('swipe')}>Começar a Jornada</button>
         </div>
@@ -329,7 +349,9 @@ export default function App() {
                <div className="swipe-stamp stamp-like" style={{ opacity: dragX > 50 ? (dragX-50)/70 : 0 }}>LIKE</div>
                <div className="swipe-stamp stamp-nope" style={{ opacity: dragX < -50 ? (Math.abs(dragX)-50)/70 : 0 }}>NOPE</div>
                <Sparkles size={24} color="rgba(212, 175, 55, 0.4)" style={{ marginBottom: '2rem', zIndex: 2 }} />
-               <p className="card-text">{QUESTIONS[currentIndex].text}</p>
+               <p className="card-text">
+                 <TypewriterText text={QUESTIONS[currentIndex].text} />
+               </p>
                <div className="card-divider" style={{ zIndex: 2 }}></div>
              </div>
           </div>
