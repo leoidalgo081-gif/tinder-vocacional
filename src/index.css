@@ -403,6 +403,12 @@ h2 {
 .swipe-right .stamp-like { opacity: 1; }
 .swipe-left .stamp-nope { opacity: 1; }
 
+.action-buttons.locked {
+  opacity: 0.5;
+  filter: grayscale(0.5);
+  pointer-events: none;
+}
+
 .action-buttons {
   display: flex;
   justify-content: center;

@@ -50,22 +50,27 @@ const BurningXIcon = ({ size = 48 }) => (
   </svg>
 );
 
-const TypewriterText = ({ text, speed = 30 }) => {
+const TypewriterText = ({ text, speed = 45, onComplete }) => {
   const [displayedText, setDisplayedText] = useState('');
   
   useEffect(() => {
-    setDisplayedText('');
+    let currentText = '';
     let index = 0;
+    setDisplayedText('');
+    
     const interval = setInterval(() => {
       if (index < text.length) {
-        setDisplayedText(prev => prev + text.charAt(index));
+        currentText += text.charAt(index);
+        setDisplayedText(currentText);
         index++;
       } else {
         clearInterval(interval);
+        if (onComplete) onComplete();
       }
     }, speed);
+    
     return () => clearInterval(interval);
-  }, [text, speed]);
+  }, [text, speed, onComplete]);
 
   return <span>{displayedText}</span>;
 };
@@ -110,6 +115,7 @@ export default function App() {
   const [swipeDirection, setSwipeDirection] = useState(null);
   const [ranking, setRanking] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isTyping, setIsTyping] = useState(true);
   
   // Drag State
   const [dragX, setDragX] = useState(0);
@@ -156,7 +162,7 @@ export default function App() {
   };
 
   const handleSwipe = useCallback((direction) => {
-    if (swipeDirection) return;
+    if (swipeDirection || isTyping) return;
     setSwipeDirection(direction);
     
     if (direction === 'right') {
@@ -167,17 +173,18 @@ export default function App() {
     setTimeout(() => {
       if (currentIndex < QUESTIONS.length - 1) {
         setCurrentIndex(p => p + 1);
+        setIsTyping(true); // Lock again for the next question
         setSwipeDirection(null);
         setDragX(0); // Reset drag
       } else {
         setScreen('calculating');
       }
     }, 500);
-  }, [currentIndex, swipeDirection]);
+  }, [currentIndex, swipeDirection, isTyping]);
 
   // Touch/Mouse Handlers
   const onDragStart = (e) => {
-    if (swipeDirection) return;
+    if (swipeDirection || isTyping) return;
     setIsDragging(true);
     const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
     startXRef.current = clientX;
@@ -350,18 +357,21 @@ export default function App() {
                <div className="swipe-stamp stamp-nope" style={{ opacity: dragX < -50 ? (Math.abs(dragX)-50)/70 : 0 }}>NOPE</div>
                <Sparkles size={24} color="rgba(212, 175, 55, 0.4)" style={{ marginBottom: '2rem', zIndex: 2 }} />
                <p className="card-text">
-                 <TypewriterText text={QUESTIONS[currentIndex].text} />
+                 <TypewriterText 
+                   text={QUESTIONS[currentIndex].text} 
+                   onComplete={() => setIsTyping(false)} 
+                 />
                </p>
                <div className="card-divider" style={{ zIndex: 2 }}></div>
              </div>
           </div>
 
-          <div className="action-buttons">
-            <div className="action-btn-wrapper dislike" onClick={() => handleSwipe('left')}>
+          <div className={`action-buttons ${isTyping ? 'locked' : ''}`}>
+            <div className="action-btn-wrapper dislike" onClick={() => !isTyping && handleSwipe('left')}>
               <div className="btn-dislike"><BurningXIcon size={46} /></div>
               <span>Não é pra mim</span>
             </div>
-            <div className="action-btn-wrapper like" onClick={() => handleSwipe('right')}>
+            <div className="action-btn-wrapper like" onClick={() => !isTyping && handleSwipe('right')}>
               <div className="btn-like"><BurningHeartIcon size={52} /></div>
               <span>Meu coração arde</span>
             </div>
