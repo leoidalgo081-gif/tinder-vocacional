@@ -255,7 +255,7 @@ export default function App() {
 
       {screen === 'registration' && (
         <div className="screen" style={{textAlign: 'left'}}>
-          <h2 style={{color: '#fff', fontSize: '2.4rem', marginBottom: '1rem'}}>Quase lá!</h2>
+          <h2 style={{color: '#fff', fontSize: '2.4rem', marginBottom: '1rem'}}>Só mais um passo...</h2>
           <p style={{color: 'var(--text-muted)', marginBottom: '2.5rem', fontSize: '1.1rem'}}>Deixe seus dados para ver o seu resultado:</p>
           
           <div className="form-group">
@@ -300,7 +300,7 @@ export default function App() {
           <div className={`action-buttons ${isTyping ? 'locked' : ''}`}>
             <div className="action-btn-wrapper dislike" onClick={() => handleSwipe('left')}>
               <div className="btn-dislike"><BurningXIcon size={46} /></div>
-              <span>Ainda não...</span>
+              <span>Não é pra mim...</span>
             </div>
             <div className="action-btn-wrapper like" onClick={() => handleSwipe('right')}>
               <div className="btn-like"><BurningHeartIcon size={52} /></div>
@@ -313,7 +313,7 @@ export default function App() {
       {screen === 'calculating' && (
         <div className="screen" style={{alignItems: 'center', paddingTop: '30%'}}>
           <div className="loading-circle"></div>
-          <h2 className="calculating-text">Sintonizando com o Carisma...</h2>
+          <h2 className="calculating-text">Vamos ver se você tem match com o carisma...</h2>
         </div>
       )}
 
