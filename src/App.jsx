@@ -229,12 +229,19 @@ export default function App() {
         <div className="screen welcome-screen" style={{ justifyContent: 'center', paddingBottom: '4rem' }}>
           
           {/* Tinder Vocacional label */}
-          <p style={{ color: 'var(--gold)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', fontSize: '0.8rem', marginBottom: '2rem', opacity: 0.9 }}>
+          <p style={{ color: 'var(--gold)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', fontSize: '0.8rem', marginBottom: '1rem', opacity: 0.9 }}>
             Tinder Vocacional
           </p>
 
-          <div className="welcome-logo-card">
-            <img src={logo} alt="Shalom" className="welcome-logo-img" />
+          {/* Animated logo with visual effects */}
+          <div className="welcome-logo-orb">
+            <div className="orb-ring orb-ring-1"></div>
+            <div className="orb-ring orb-ring-2"></div>
+            <div className="orb-glow"></div>
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="orb-spark" style={{ '--i': i }}></div>
+            ))}
+            <img src={logo} alt="Shalom" className="orb-logo-img" />
           </div>
 
           <h1 className="welcome-title">

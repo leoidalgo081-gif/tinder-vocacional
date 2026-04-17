@@ -152,6 +152,106 @@ h2 {
   to { opacity: 1; transform: scale(1); }
 }
 
+/* ─── Animated Logo Orb ─── */
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  33%       { transform: translateY(-12px) rotate(1.5deg); }
+  66%       { transform: translateY(-6px) rotate(-1deg); }
+}
+
+@keyframes orbRing1 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes orbRing2 {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+@keyframes orbGlow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50%       { opacity: 0.85; transform: scale(1.15); }
+}
+
+@keyframes orbSpark {
+  0%   { transform: translateY(0) scale(0); opacity: 0; }
+  20%  { opacity: 1; }
+  100% { transform: translateY(-70px) translateX(calc(var(--dx, 0px))) scale(1); opacity: 0; }
+}
+
+.welcome-logo-orb {
+  position: relative;
+  width: clamp(110px, 32vw, 160px);
+  height: clamp(110px, 32vw, 160px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto clamp(1.2rem, 3.5vh, 2.5rem);
+  animation: orbFloat 5s ease-in-out infinite;
+}
+
+.orb-glow {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,100,0,0.6) 0%, rgba(139,0,0,0.3) 50%, transparent 75%);
+  animation: orbGlow 3s ease-in-out infinite;
+  filter: blur(8px);
+  z-index: 0;
+}
+
+.orb-ring {
+  position: absolute;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: transparent;
+  z-index: 1;
+}
+
+.orb-ring-1 {
+  width: calc(100% + 28px);
+  height: calc(100% + 28px);
+  border-width: 2px;
+  border-top-color: var(--gold);
+  border-right-color: rgba(212,175,55,0.3);
+  animation: orbRing1 4s linear infinite;
+}
+
+.orb-ring-2 {
+  width: calc(100% + 50px);
+  height: calc(100% + 50px);
+  border-width: 1px;
+  border-bottom-color: rgba(255,60,0,0.5);
+  border-left-color: rgba(255,60,0,0.2);
+  animation: orbRing2 7s linear infinite;
+}
+
+.orb-spark {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  z-index: 3;
+  animation: orbSpark 2.5s ease-out infinite;
+  animation-delay: calc(var(--i) * 0.5s);
+  --dx: calc((var(--i) - 2) * 18px);
+  transform-origin: center bottom;
+}
+
+.orb-logo-img {
+  width: 75%;
+  height: 75%;
+  object-fit: contain;
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 12px rgba(255,100,0,0.5));
+}
+
 .welcome-logo-card {
   width: clamp(140px, 45vw, 220px);
   height: clamp(140px, 45vw, 220px);
