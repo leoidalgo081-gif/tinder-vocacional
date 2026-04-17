@@ -226,21 +226,24 @@ export default function App() {
       <ParticleBackground />
 
       {screen === 'welcome' && (
-        <div className="screen welcome-screen" style={{ justifyContent: 'center', gap: '1.5rem' }}>
-          <div className="logo-wrapper" style={{ marginBottom: '1rem' }}>
-            <div className="logo-aura"></div>
-            <img src={logo} alt="Shalom" className="welcome-logo" style={{ width: '160px' }} />
+        <div className="screen welcome-screen" style={{ justifyContent: 'center', paddingBottom: '4rem' }}>
+          
+          <div className="welcome-logo-card">
+            <img src={logo} alt="Shalom" className="welcome-logo-img" />
           </div>
 
-          <h1 style={{ fontSize: '2.4rem', fontWeight: 900, marginBottom: '0.5rem', padding: '0 1rem' }}>
-            Será que sinto atração pelo Carisma Shalom?
+          <h1 className="welcome-title">
+            Será que sinto<br/>
+            atração pelo<br/>
+            <span style={{ color: 'var(--gold)' }}>Carisma Shalom?</span>
           </h1>
 
-          <p style={{ fontSize: '1.1rem', opacity: 0.7, fontWeight: 500, color: '#fff', maxWidth: '300px', margin: '0 auto 1.5rem', lineHeight: 1.4 }}>
-            Faça o teste, se seu coração arder arraste para direita!
+          <p className="welcome-subtitle">
+            Faça o teste, se seu coração arder<br/>
+            arraste para direita!
           </p>
 
-          <div style={{ width: '100%', maxWidth: '300px', margin: '0 auto' }}>
+          <div style={{ width: '100%', maxWidth: '320px', margin: '2rem auto 0' }}>
             <button className="btn-primary" style={{ width: '100%' }} onClick={() => setScreen('swipe')}>
               COMEÇAR A JORNADA
             </button>
