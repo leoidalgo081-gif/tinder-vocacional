@@ -375,16 +375,7 @@ export default function App() {
           ) : (
             <div className="ranking-container" style={{overflowY: 'auto', flex: 1, maxHeight: '100%'}}>
               {ranking.length === 0 ? (
-                <div style={{textAlign: 'center', padding: '2rem'}}>
-                  {muralError ? (
-                    <>
-                      <p style={{color: '#ff4444', fontSize: '0.9rem', marginBottom: '0.5rem'}}>⚠️ {muralError}</p>
-                      <p style={{color: '#666', fontSize: '0.8rem'}}>Verifique RLS no Supabase (SELECT deve estar liberado para anon)</p>
-                    </>
-                  ) : (
-                    <p style={{color: '#666'}}>Seja o primeiro a entrar no Mural! 🔥</p>
-                  )}
-                </div>
+                <p style={{textAlign: 'center', color: '#666', padding: '2rem'}}>Seja o primeiro a entrar no Mural! 🔥</p>
               ) : (
                 ranking.map((r, i) => (
                   <div key={i} className={`ranking-item ${formatName(r.name) === firstName ? 'current' : ''}`}>
