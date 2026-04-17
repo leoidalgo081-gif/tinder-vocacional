@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Sparkles, Map, Flame, User, Phone, Calendar, Gift, Quote, ChevronRight } from 'lucide-react';
+import { Sparkles, Flame, User, Phone, Calendar, ChevronRight, Heart, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import './index.css';
 import { supabase } from './supabaseClient';
@@ -30,8 +30,8 @@ const QUESTIONS = [
   { id: 8, text: "Zelar por cada detalhe da Liturgia e da vida, pois a beleza é o reflexo da glória de Deus entre nós.", bg: bg8 },
   { id: 9, text: "Encontrar Jesus escondido na carne daqueles que sofrem, servindo os 'leprosos' de hoje com amor e radicalidade.", bg: bg9 },
   { id: 10, text: "Desejar uma união tão profunda com Deus que a minha vida seja uma constante e total oferta de amor por Amor.", bg: bg10 },
-  { id: 11, text: "Anunciar o Gospel com parresia (ousadia), usando novos métodos, criatividade e um novo ardor missionário.", bg: bg11 },
-  { id: 12, text: "Amar a Igreja e o Papa com amor filial, dando a vida em unidade com meus pastores e irmãos de comunidade.", bg: bg12 }
+  { id: 11, text: "Viver a vida comunitária como um transbordamento da alegria da Ressurreição, amando meus irmãos no quotidiano.", bg: bg11 },
+  { id: 12, text: "Desejar, como oferta, gastar meus dias aos pés de Pedro, pela Igreja e pela humanidade, no Carisma Shalom.", bg: bg12 }
 ];
 
 const BurningHeartIcon = ({ size = 48 }) => (
@@ -50,38 +50,67 @@ const BurningXIcon = ({ size = 48 }) => (
   </svg>
 );
 
+const TypewriterText = React.memo(({ text, speed = 45, onComplete }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  
+  useEffect(() => {
+    let isCancelled = false;
+    let index = 0;
+    let currentText = "";
+    setDisplayedText('');
+    
+    const interval = setInterval(() => {
+      if (isCancelled) return;
+      if (index < text.length) {
+        currentText += text.charAt(index);
+        setDisplayedText(currentText);
+        index++;
+      } else {
+        clearInterval(interval);
+        if (onComplete) onComplete();
+      }
+    }, speed);
+    
+    return () => {
+      isCancelled = true;
+      clearInterval(interval);
+    };
+  }, [text, speed, onComplete]);
+
+  return (
+    <span>
+      {displayedText}
+      {displayedText.length < text.length && <span className="typewriter-cursor" />}
+    </span>
+  );
+});
+
 const ParticleBackground = React.memo(() => {
   const [particles, setParticles] = useState([]);
-
   useEffect(() => {
-    const newParticles = Array.from({ length: 20 }).map((_, i) => ({
+    const newParticles = Array.from({ length: 15 }).map((_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
-      delay: `${Math.random() * 10}s`,
-      duration: `${15 + Math.random() * 15}s`,
-      size: `${1 + Math.random() * 2}px`
+      delay: `${Math.random() * 5}s`,
+      duration: `${10 + Math.random() * 15}s`,
+      size: `${1 + Math.random() * 2.5}px`
     }));
     setParticles(newParticles);
   }, []);
-
   return (
     <div className="particles">
       {particles.map(p => (
-        <div 
-          key={p.id} 
-          className="particle" 
-          style={{ 
-            left: p.left, 
-            animationDelay: p.delay, 
-            animationDuration: p.duration,
-            width: p.size,
-            height: p.size
-          }} 
-        />
+        <div key={p.id} className="particle" style={{ left: p.left, animationDelay: p.delay, animationDuration: p.duration, width: p.size, height: p.size }} />
       ))}
     </div>
   );
 });
+
+const formatName = (name) => {
+  if (!name) return "";
+  const trimmed = name.trim().split(' ')[0];
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+};
 
 export default function App() {
   const [screen, setScreen] = useState('welcome');
@@ -90,98 +119,44 @@ export default function App() {
   const [swipeDirection, setSwipeDirection] = useState(null);
   const [ranking, setRanking] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
-  
-  // Drag State
-  const [dragX, setDragX] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const startXRef = useRef(0);
+  const [isTyping, setIsTyping] = useState(false);
 
-  // Animated Points State
+  const [userData, setUserData] = useState({ name: '', phone: '', age: '' });
   const [displayedPoints, setDisplayedPoints] = useState(0);
   const [finalFictitiousPoints, setFinalFictitiousPoints] = useState(0);
 
-  const [userData, setUserData] = useState({
-    name: '',
-    phone: '',
-    age: ''
-  });
-
-  const fetchRanking = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('matches')
-        .select('name, points')
-        .order('points', { ascending: false })
-        .limit(5);
-
-      if (error) throw error;
-      setRanking(data || []);
-    } catch (err) {
-      console.error("Erro ao buscar ranking:", err.message);
-    }
-  };
+  const handleTypingComplete = useCallback(() => setIsTyping(false), []);
 
   const triggerCelebration = () => {
-    const scalar = 2;
-    const gold_path = confetti.shapeFromPath({ path: 'M0 10 L5 0 L10 10 Z' });
-
     confetti({
-      particleCount: 40,
+      particleCount: 50,
       spread: 70,
       origin: { y: 0.7 },
-      colors: ['#D4AF37', '#FFD700', '#FF2A00', '#FFFFFF'],
-      shapes: [gold_path, 'circle'],
-      scalar
+      colors: ['#D4AF37', '#FF3C00', '#FFFFFF'],
     });
   };
 
   const handleSwipe = useCallback((direction) => {
-    if (swipeDirection) return;
+    if (swipeDirection || isTyping) return;
     setSwipeDirection(direction);
-    
     if (direction === 'right') {
       triggerCelebration();
-      setScore(p => p + 1);
+      setScore(s => s + 1);
     }
-
     setTimeout(() => {
       if (currentIndex < QUESTIONS.length - 1) {
-        setCurrentIndex(p => p + 1);
+        setCurrentIndex(i => i + 1);
         setSwipeDirection(null);
-        setDragX(0); // Reset drag
+        setIsTyping(true);
       } else {
         setScreen('calculating');
       }
     }, 500);
-  }, [currentIndex, swipeDirection]);
+  }, [currentIndex, swipeDirection, isTyping]);
 
-  // Touch/Mouse Handlers
-  const onDragStart = (e) => {
-    if (swipeDirection) return;
-    setIsDragging(true);
-    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-    startXRef.current = clientX;
-  };
-
-  const onDragMove = (e) => {
-    if (!isDragging || swipeDirection) return;
-    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-    const offset = clientX - startXRef.current;
-    setDragX(offset);
-  };
-
-  const onDragEnd = () => {
-    if (!isDragging || swipeDirection) return;
-    setIsDragging(false);
-
-    const threshold = 120; // threshold for swipe
-    if (dragX > threshold) {
-      handleSwipe('right');
-    } else if (dragX < -threshold) {
-      handleSwipe('left');
-    } else {
-      setDragX(0); // Snap back to center
-    }
+  const startJourney = () => {
+    setScreen('swipe');
+    setIsTyping(true);
   };
 
   useEffect(() => {
@@ -196,310 +171,200 @@ export default function App() {
     }
   }, [screen, score]);
 
-  // Points counting effect
   useEffect(() => {
     if (screen === 'result') {
-      setDisplayedPoints(0); // Start from zero
+      let start = null;
       const duration = 2000;
-      const start = Date.now();
-      
-      let frameId;
-      const animate = () => {
-        const now = Date.now();
-        const progress = Math.min((now - start) / duration, 1);
-        const currentScore = Math.floor(progress * finalFictitiousPoints);
-        
-        setDisplayedPoints(currentScore);
-        
-        if (progress < 1) {
-          frameId = requestAnimationFrame(animate);
-        }
+      const animate = (timestamp) => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        setDisplayedPoints(Math.floor(progress * finalFictitiousPoints));
+        if (progress < 1) requestAnimationFrame(animate);
       };
-      
-      frameId = requestAnimationFrame(animate);
-      return () => cancelAnimationFrame(frameId);
+      requestAnimationFrame(animate);
     }
   }, [screen, finalFictitiousPoints]);
 
-  const currentProgress = ((currentIndex + 1) / QUESTIONS.length) * 100;
-
-  const handleRegistrationSubmit = async (e) => {
-    e.preventDefault();
+  const pushToSupabase = async () => {
     if (!userData.name || !userData.phone || !userData.age) return;
-    
     setIsSaving(true);
     try {
-      const { error } = await supabase.from('matches').insert([
-        { 
-          name: userData.name.trim(), 
-          phone: userData.phone, 
-          age: parseInt(userData.age), 
-          points: finalFictitiousPoints 
-        }
-      ]);
-
-      if (error) throw error;
+      await supabase.from('matches').insert([{
+        name: formatName(userData.name),
+        phone: userData.phone,
+        age: parseInt(userData.age),
+        points: finalFictitiousPoints
+      }]);
+      // After saving, we show the result screen (points)
       setScreen('result');
     } catch (err) {
-      console.error("Erro ao salvar:", err.message);
-      alert("Houve um erro ao salvar seus dados. Tente novamente!");
+      console.error(err);
+      setScreen('result'); 
     } finally {
       setIsSaving(false);
     }
   };
 
-  useEffect(() => {
-    if (screen === 'mission') {
-      fetchRanking();
+  const goToMural = async () => {
+    try {
+      const { data } = await supabase.from('matches')
+        .select('name, points')
+        .order('points', { ascending: false })
+        .limit(10);
+      setRanking(data || []);
+      setScreen('mural');
+    } catch (err) {
+      console.error(err);
+      setScreen('mural');
     }
-  }, [screen]);
-
-  // Card transform during drag
-  const cardStyle = {
-    backgroundImage: `url(${QUESTIONS[currentIndex].bg})`,
-    transform: swipeDirection 
-      ? undefined // hand over to CSS classes
-      : `translateX(${dragX}px) rotate(${dragX / 15}deg)`,
-    transition: isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2), opacity 0.4s ease'
   };
 
-  const firstName = userData.name.trim().split(' ')[0];
+  const firstName = formatName(userData.name);
 
   return (
     <div className="app-container">
       <ParticleBackground />
-      
+
       {screen === 'welcome' && (
         <div className="screen welcome-screen">
+          <header className="premium-header" style={{ position: 'absolute', top: '3rem', width: '100%', left: 0 }}>
+            <h1 style={{fontSize: '2.5rem', marginBottom: '0.2rem', textAlign: 'center'}}>Tinder Vocacional</h1>
+            <div className="card-divider" style={{margin: '0 auto', width: '60px'}}></div>
+          </header>
+          
           <div className="logo-wrapper">
-             <div className="logo-aura"></div>
-             <div className="logo-beams"></div>
-             {[...Array(6)].map((_, i) => (
-               <div 
-                 key={i} 
-                 className="floating-spark" 
-                 style={{ 
-                   left: `${Math.random() * 100 - 50}%`, 
-                   top: `${Math.random() * 100 - 50}%`,
-                   animationDelay: `${Math.random() * 3}s` 
-                 }}
-               ></div>
-             ))}
-             <img src={logo} alt="Shalom Logo" className="welcome-logo" />
+            <div className="logo-aura"></div>
+            <img src={logo} alt="Shalom" className="welcome-logo" />
+          </div>
+
+          <div style={{width: '100%', maxWidth: '300px', margin: '0 auto'}}>
+            <button className="btn-primary" style={{width: '100%'}} onClick={() => setScreen('swipe')}>
+              Começar jornada <ChevronRight size={18} />
+            </button>
+          </div>
+          <p style={{marginTop: '2rem', fontSize: '0.9rem', opacity: 0.8, fontWeight: 800, letterSpacing: '1.5px', color: 'var(--gold)'}}>CLIQUE NO CORAÇÃO PARA ESCOLHER</p>
+        </div>
+      )}
+
+      {screen === 'registration' && (
+        <div className="screen" style={{justifyContent: 'center', textAlign: 'left'}}>
+          <h2 style={{color: '#fff', fontSize: '2.4rem', marginBottom: '1rem'}}>Quase lá!</h2>
+          <p style={{color: 'var(--text-muted)', marginBottom: '2.5rem', fontSize: '1.1rem'}}>Deixe seus dados para ver o seu resultado:</p>
+          
+          <div className="form-group">
+            <label className="input-label"><User size={14}/> Como se chama?</label>
+            <input className="input-field" type="text" placeholder="Seu nome" value={userData.name} onChange={e => setUserData({...userData, name: e.target.value})} />
+          </div>
+
+          <div className="form-group">
+            <label className="input-label"><Phone size={14}/> Whatsapp</label>
+            <input className="input-field" type="tel" placeholder="(00) 00000-0000" value={userData.phone} onChange={e => setUserData({...userData, phone: e.target.value})} />
           </div>
           
-          <h1 style={{ marginBottom: '1rem', fontSize: '2.5rem' }}>Será que sinto atração pelo Carisma Shalom?</h1>
-          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '1.2rem', marginBottom: '2.5rem', fontWeight: 600, lineHeight: 1.5 }}>
-            Faça o teste: clique no coração se seu coração arder! ❤️🔥
-          </p>
-          <button className="btn-primary btn-small" onClick={() => setScreen('swipe')}>Começar a Jornada</button>
+          <div className="form-group">
+            <label className="input-label"><Calendar size={14}/> Idade</label>
+            <input className="input-field" type="number" placeholder="Sua idade" value={userData.age} onChange={e => setUserData({...userData, age: e.target.value})} />
+          </div>
+
+          <button className="btn-primary" style={{width: '100%', marginTop: '1rem'}} onClick={pushToSupabase} disabled={isSaving}>
+            {isSaving ? "Eternizando..." : "Ver meu Match 🔥"}
+          </button>
         </div>
       )}
 
       {screen === 'swipe' && (
-        <div className="screen" style={{ padding: '0', justifyContent: 'flex-start' }}>
-          <div style={{ padding: '1.5rem 2rem 0' }}>
-            <div className="progress-container">
-              <div className="progress-bar" style={{ width: `${currentProgress}%` }}></div>
-            </div>
-            <div className="swipe-header">
-              <span>JORNADA VOCACIONAL</span>
-              <span>{currentIndex + 1} / {QUESTIONS.length}</span>
+        <div className="screen" style={{padding: '0'}}>
+          <div style={{padding: '1.5rem 2rem 0.5rem'}}>
+             <div className="progress-container"><div className="progress-bar" style={{width: `${((currentIndex+1)/QUESTIONS.length)*100}%`}}></div></div>
+             <p style={{color: 'var(--gold)', fontWeight: 800, fontSize: '0.7rem', letterSpacing: '2px', textAlign: 'left'}}>QUESTÃO {currentIndex+1}/{QUESTIONS.length}</p>
+          </div>
+
+          <div className="swipe-container">
+            <div className={`swipe-card ${swipeDirection ? `swipe-${swipeDirection}` : ''}`} style={{backgroundImage: `url(${QUESTIONS[currentIndex].bg})`}}>
+              <div className="card-inner-border" />
+              <div className="swipe-stamp stamp-like">AMÉM</div>
+              <div className="swipe-stamp stamp-nope">AINDA NÃO</div>
+              <p className="card-text">
+                <TypewriterText text={QUESTIONS[currentIndex].text} onComplete={handleTypingComplete} />
+              </p>
             </div>
           </div>
 
-          <div 
-            className="swipe-container"
-            onMouseDown={onDragStart}
-            onMouseMove={onDragMove}
-            onMouseUp={onDragEnd}
-            onMouseLeave={onDragEnd}
-            onTouchStart={onDragStart}
-            onTouchMove={onDragMove}
-            onTouchEnd={onDragEnd}
-          >
-             <div 
-               className={`swipe-card ${swipeDirection ? `swipe-${swipeDirection}` : ''}`}
-               style={cardStyle}
-             >
-               <div className="card-inner-border"></div>
-               <div className="swipe-stamp stamp-like" style={{ opacity: dragX > 50 ? (dragX-50)/70 : 0 }}>LIKE</div>
-               <div className="swipe-stamp stamp-nope" style={{ opacity: dragX < -50 ? (Math.abs(dragX)-50)/70 : 0 }}>NOPE</div>
-               <Sparkles size={24} color="rgba(212, 175, 55, 0.4)" style={{ marginBottom: '2rem', zIndex: 2 }} />
-               <p className="card-text">{QUESTIONS[currentIndex].text}</p>
-               <div className="card-divider" style={{ zIndex: 2 }}></div>
-             </div>
-          </div>
-
-          <div className="action-buttons">
+          <div className={`action-buttons ${isTyping ? 'locked' : ''}`}>
             <div className="action-btn-wrapper dislike" onClick={() => handleSwipe('left')}>
               <div className="btn-dislike"><BurningXIcon size={46} /></div>
-              <span>Não é pra mim</span>
+              <span>Ainda não...</span>
             </div>
             <div className="action-btn-wrapper like" onClick={() => handleSwipe('right')}>
               <div className="btn-like"><BurningHeartIcon size={52} /></div>
-              <span>Meu coração arde</span>
+              <span>Meu coração arde!</span>
             </div>
           </div>
         </div>
       )}
 
       {screen === 'calculating' && (
-        <div className="screen" style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <div className="screen" style={{justifyContent: 'center', alignItems: 'center'}}>
           <div className="loading-circle"></div>
-          <p className="calculating-text">Vamos ver se você tem match com o carisma...</p>
-        </div>
-      )}
-
-      {screen === 'registration' && (
-        <div className="screen" style={{ justifyContent: 'center', textAlign: 'left', padding: '2rem 2.5rem' }}>
-          <div style={{ marginBottom: '2.5rem' }}>
-             <h2 style={{ marginBottom: '0.8rem', fontSize: '2.2rem', color: '#fff' }}>Só mais um passo...</h2>
-             <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '1rem', lineHeight: 1.5 }}>
-               Registre seus dados para mergulhar no seu resultado e ver quem mais deu match!
-             </p>
-          </div>
-          
-          <form onSubmit={handleRegistrationSubmit}>
-            <div className="form-group">
-              <label className="input-label"><User size={16}/> Como você se chama? (Só o primeiro nome)</label>
-              <input 
-                className="input-field" 
-                type="text" 
-                placeholder="Seu nome" 
-                required 
-                value={userData.name} 
-                onChange={e => setUserData({...userData, name: e.target.value})} 
-              />
-            </div>
-
-            <div className="input-group">
-              <div style={{ flex: 1.8 }}>
-                <label className="input-label"><Phone size={16}/> Telefone/WA</label>
-                <input 
-                  className="input-field" 
-                  type="tel" 
-                  placeholder="(00) 00000-0000" 
-                  required 
-                  value={userData.phone} 
-                  onChange={e => setUserData({...userData, phone: e.target.value})} 
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label className="input-label"><Calendar size={16}/> Idade</label>
-                <input 
-                  className="input-field" 
-                  type="number" 
-                  placeholder="00" 
-                  required 
-                  value={userData.age} 
-                  onChange={e => setUserData({...userData, age: e.target.value})} 
-                />
-              </div>
-            </div>
-
-            <button type="submit" className="btn-primary" style={{ marginTop: '1.5rem', width: '100%' }} disabled={isSaving}>
-              {isSaving ? "Salvando Ardor..." : "Ver meu Match"}
-            </button>
-          </form>
+          <h2 className="calculating-text">Sintonizando com o Carisma...</h2>
         </div>
       )}
 
       {screen === 'result' && (
-        <div className="screen" style={{ justifyContent: 'center' }}>
+        <div className="screen" style={{justifyContent: 'center'}}>
           <div className="fire-wrapper">
-             <div className="fire-bg-glow"></div>
-             <Flame className="fire-icon" size={110} strokeWidth={2} fill="#ff5e00" />
+             <div className="fire-bg-glow" />
+             <Flame className="fire-icon" size={110} fill="#ff3c00" strokeWidth={1} />
           </div>
           <div className="result-card">
-            <div className="result-badge">Calculando Ardor...</div>
-            <div className="result-score" style={{ variantNumeric: 'tabular-nums' }}>
-              {displayedPoints.toLocaleString()} <span style={{ fontSize: '1.2rem', color: 'var(--gold)' }}>pts</span>
-            </div>
-            <p className="result-desc">
+            <div className="result-score">{displayedPoints.toLocaleString()}<span style={{fontSize: '1.2rem'}}> pts</span></div>
+            <p className="result-desc" style={{marginTop: '1.5rem'}}>
               {score >= 10 
-                ? `${firstName}, seu coração está verdadeiramente inflamado! O Espírito Santo sopra onde quer, e hoje Ele sopra em sua alma.`
-                : `${firstName}, seu coração começa a arder pela paz. Existe uma semente plantada em você!`}
+                ? `${firstName}, seu espírito está em chamas! O Carisma Shalom pulsa em você.` 
+                : `${firstName}, existe uma semente de eternidade brotando no seu coração.`}
             </p>
           </div>
-          <button 
-            className="btn-primary" 
-            style={{ marginTop: '2.5rem', opacity: displayedPoints === finalFictitiousPoints ? 1 : 0.5 }} 
-            onClick={() => displayedPoints === finalFictitiousPoints && setScreen('mission')}
-          >
-            Continuar para o Mural
+          <button className="btn-primary" style={{marginTop: '3rem', width: '100%'}} onClick={goToMural}>
+            Ver Mural do Ardor
           </button>
         </div>
       )}
 
-      {screen === 'mission' && (
-        <div className="screen" style={{ justifyContent: 'flex-start', textAlign: 'left', padding: '3.5rem 2rem', overflowY: 'auto' }}>
-          <h2 style={{ marginBottom: '1.5rem', color: 'var(--gold)' }}>Mural Vocacional</h2>
-          
+      {screen === 'mural' && (
+        <div className="screen">
+          <h2 style={{fontSize: '2.4rem', color: 'var(--gold)', marginBottom: '2rem'}}>Mural Vocacional</h2>
           <div className="ranking-container">
-            {ranking.map((user, idx) => (
-              <div key={idx} className={`ranking-item ${user.name === userData.name.trim().split(' ')[0] ? 'current' : ''}`}>
-                <span>{user.name}</span>
-                <span style={{color: user.points >= 12000 ? 'var(--gold)' : '#666'}}>
-                  {user.points.toLocaleString()} {user.points >= 12000 ? '🔥' : 'pts'}
-                </span>
+            {ranking.map((r, i) => (
+              <div key={i} className="ranking-item">
+                <span style={{color: '#fff'}}>#{i+1} {r.name}</span>
+                <span style={{color: 'var(--gold)'}}>{r.points.toLocaleString()} 🔥</span>
               </div>
             ))}
-            
-            {ranking.length === 0 && (
-              <p style={{ color: '#666', textAlign: 'center', padding: '2rem' }}>Carregando ranking global...</p>
-            )}
           </div>
-
-          <p style={{ color: 'rgba(255,255,255,0.5)', textAlign: 'center', marginBottom: '2rem' }}>
-            Você faz parte de uma multidão que também deu match com o carisma!
-          </p>
-
-          <button className="btn-primary" style={{ width: '100%', marginBottom: '2rem' }} onClick={() => setScreen('moyses')}>
-            O que fazer agora? 🤔
+          <button className="btn-primary" style={{width: '100%', marginTop: 'auto'}} onClick={() => setScreen('missao')}>
+            O que Deus me diz agora?
           </button>
         </div>
       )}
 
-      {screen === 'moyses' && (
-        <div className="screen" style={{ justifyContent: 'center', textAlign: 'center', padding: '2rem' }}>
-           <p style={{ fontSize: '1.9rem', fontFamily: 'Playfair Display', fontStyle: 'italic', lineHeight: 1.4, color: '#fff', marginBottom: '2rem' }}>
-             "Tudo o que temos e somos, em nossa pobreza, queremos colocar aos pés de Pedro como prova do nosso amor a Cristo e à Igreja."
-           </p>
-           <p style={{ color: 'var(--gold)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '3px', fontSize: '0.85rem' }}>
-             O Cerne da Vocação Shalom
-           </p>
-           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', marginTop: '1rem', letterSpacing: '1px' }}>
-             — Moysés Azevedo
-           </p>
-           
-           <button className="btn-primary btn-small" style={{ marginTop: '4rem' }} onClick={() => setScreen('final')}>
-             Continuar <ChevronRight size={18} />
-           </button>
-        </div>
-      )}
-
-      {screen === 'final' && (
-        <div className="screen" style={{ justifyContent: 'center', textAlign: 'center', padding: '2rem' }}>
-          <div className="mission-box" style={{ background: 'transparent', border: 'none', padding: 0 }}>
-            <h2 style={{ color: 'var(--gold)', fontSize: '2.2rem', marginBottom: '1.5rem' }}>O que você oferece hoje?</h2>
-            <p style={{ color: '#ccc', fontSize: '1.1rem', lineHeight: 1.6, marginBottom: '3rem' }}>
-              O Carisma Shalom nasceu aos pés de Pedro. Hoje, Deus pergunta ao seu coração:
+      {screen === 'missao' && (
+        <div className="screen" style={{justifyContent: 'center'}}>
+          <div className="mission-box">
+            <p className="mission-text">
+              "Aos 20 anos, eu não tinha nada para oferecer à Igreja a não ser a minha própria juventude. Coloquei minha vida aos pés de Pedro como um presente para o mundo."
             </p>
-            
-            <div style={{ background: 'rgba(255, 42, 0, 0.05)', padding: '3rem 2rem', borderRadius: '32px', border: '1px solid var(--red-bright)', marginBottom: '3rem', backdropFilter: 'blur(20px)', boxShadow: '0 0 40px rgba(255, 42, 0, 0.2)' }}>
-              <p style={{ color: '#fff', fontSize: '1.6rem', lineHeight: 1.3, fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px' }}>
-                {firstName}, se você tivesse que dar um presente para o Papa hoje, o que você daria?
-              </p>
-            </div>
-
-            <p style={{ color: 'var(--gold)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '2rem' }}>
-               Vá ao stand e converse com um dos vocacionados! 🏃‍♂️💬
-            </p>
+            <p className="mission-author">— Moysés Azevedo, Fundador</p>
+          </div>
+          
+          <div style={{marginTop: '2rem', padding: '2rem', background: 'rgba(255, 60, 0, 0.1)', borderRadius: '24px', border: '1px solid var(--red-bright)'}}>
+            <h3 style={{fontSize: '1.6rem', lineHeight: 1.4, color: '#fff', fontWeight: 900}}>
+              {firstName}, se você pudesse dar um presente ao Papa hoje, o que você daria?
+            </h3>
+            <span className="moyses-highlight">Sua vida é o presente!</span>
           </div>
 
-          <button className="btn-primary btn-small" style={{ width: '100%' }} onClick={() => window.location.reload()}>
-            Recomeçar Jornada
+          <button className="btn-primary" style={{marginTop: '3rem', width: '100%'}} onClick={() => window.location.reload()}>
+            Recomeçar a Jornada
           </button>
         </div>
       )}
