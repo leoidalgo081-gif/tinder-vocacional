@@ -228,6 +228,11 @@ export default function App() {
       {screen === 'welcome' && (
         <div className="screen welcome-screen" style={{ justifyContent: 'center', paddingBottom: '4rem' }}>
           
+          {/* Tinder Vocacional label */}
+          <p style={{ color: 'var(--gold)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', fontSize: '0.8rem', marginBottom: '2rem', opacity: 0.9 }}>
+            Tinder Vocacional
+          </p>
+
           <div className="welcome-logo-card">
             <img src={logo} alt="Shalom" className="welcome-logo-img" />
           </div>
@@ -239,11 +244,11 @@ export default function App() {
           </h1>
 
           <p className="welcome-subtitle">
-            Faça o teste, se seu coração arder<br/>
-            arraste para direita!
+            Faça o teste pra ver se você tem<br/>
+            match com o Carisma Shalom! 🔥
           </p>
 
-          <div style={{ width: '100%', maxWidth: '320px', margin: '2rem auto 0' }}>
+          <div style={{ width: '100%', maxWidth: '320px', margin: '0 auto' }}>
             <button className="btn-primary" style={{ width: '100%' }} onClick={() => setScreen('swipe')}>
               COMEÇAR A JORNADA
             </button>
