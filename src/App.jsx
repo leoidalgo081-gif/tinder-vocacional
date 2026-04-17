@@ -255,8 +255,7 @@ export default function App() {
 
       {screen === 'registration' && (
         <div className="screen" style={{textAlign: 'left'}}>
-          <h2 style={{color: '#fff', fontSize: '2.4rem', marginBottom: '1rem'}}>Só mais um passo...</h2>
-          <p style={{color: 'var(--text-muted)', marginBottom: '2.5rem', fontSize: '1.1rem'}}>Deixe seus dados para ver o seu resultado:</p>
+          <h2 style={{color: '#fff', fontSize: '2.4rem', marginBottom: '1.5rem'}}>Só mais um passo...</h2>
           
           <div className="form-group">
             <label className="input-label"><User size={14}/> Como se chama?</label>
