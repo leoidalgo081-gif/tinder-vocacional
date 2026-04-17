@@ -30,8 +30,8 @@ const QUESTIONS = [
   { id: 8, text: "Zelar por cada detalhe da Liturgia e da vida, pois a beleza é o reflexo da glória de Deus entre nós.", bg: bg8 },
   { id: 9, text: "Encontrar Jesus escondido na carne daqueles que sofrem, servindo os 'leprosos' de hoje com amor e radicalidade.", bg: bg9 },
   { id: 10, text: "Desejar uma união tão profunda com Deus que a minha vida seja uma constante e total oferta de amor por Amor.", bg: bg10 },
-  { id: 11, text: "Anunciar o Gospel com parresia (ousadia), usando novos métodos, criatividade e um novo ardor missionário.", bg: bg11 },
-  { id: 12, text: "Amar a Igreja e o Papa com amor filial, dando a vida em unidade com meus pastores e irmãos de comunidade.", bg: bg12 }
+  { id: 11, text: "Viver a unidade em comunidade, sabendo que ninguém é feliz sozinho e que fomos criados para o Amor.", bg: bg11 },
+  { id: 12, text: "Consumir a vida e a juventude aos pés de Pedro, sendo um sinal vivo da Ressurreição para o mundo.", bg: bg12 }
 ];
 
 const BurningHeartIcon = ({ size = 48 }) => (
@@ -271,6 +271,9 @@ export default function App() {
       
       {screen === 'welcome' && (
         <div className="screen welcome-screen">
+          <p style={{ position: 'absolute', top: '2rem', textTransform: 'uppercase', letterSpacing: '4px', fontSize: '0.8rem', fontWeight: 800, color: 'var(--gold)', opacity: 0.8 }}>
+            Tinder Vocacional
+          </p>
           <div className="logo-wrapper">
              <div className="logo-aura"></div>
              <div className="logo-beams"></div>
