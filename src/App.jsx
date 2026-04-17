@@ -120,6 +120,7 @@ export default function App() {
   const [ranking, setRanking] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoadingMural, setIsLoadingMural] = useState(false);
 
   const [userData, setUserData] = useState({ name: '', phone: '', age: '' });
   const [displayedPoints, setDisplayedPoints] = useState(0);
@@ -206,16 +207,21 @@ export default function App() {
   };
 
   const goToMural = async () => {
+    setIsLoadingMural(true);
+    setScreen('mural');
     try {
-      const { data } = await supabase.from('matches')
+      const { data, error } = await supabase
+        .from('matches')
         .select('name, points')
         .order('points', { ascending: false })
         .limit(10);
+      if (error) throw error;
       setRanking(data || []);
-      setScreen('mural');
     } catch (err) {
-      console.error(err);
-      setScreen('mural');
+      console.error('Erro ao buscar ranking:', err);
+      setRanking([]);
+    } finally {
+      setIsLoadingMural(false);
     }
   };
 
@@ -347,16 +353,31 @@ export default function App() {
 
       {screen === 'mural' && (
         <div className="screen">
-          <h2 style={{fontSize: '2.4rem', color: 'var(--gold)', marginBottom: '2rem'}}>Mural Vocacional</h2>
-          <div className="ranking-container">
-            {ranking.map((r, i) => (
-              <div key={i} className="ranking-item">
-                <span style={{color: '#fff'}}>#{i+1} {r.name}</span>
-                <span style={{color: 'var(--gold)'}}>{r.points.toLocaleString()} 🔥</span>
-              </div>
-            ))}
-          </div>
-          <button className="btn-primary" style={{width: '100%', marginTop: 'auto'}} onClick={() => setScreen('missao')}>
+          <h2 style={{fontSize: '2.4rem', color: 'var(--gold)', marginBottom: '1.5rem'}}>Mural Vocacional 🔥</h2>
+          
+          {isLoadingMural ? (
+            <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', marginTop: '3rem'}}>
+              <div className="loading-circle" style={{width: '50px', height: '50px'}}></div>
+              <p style={{color: 'var(--gold)', fontWeight: 700, opacity: 0.8}}>Carregando ardor global...</p>
+            </div>
+          ) : (
+            <div className="ranking-container">
+              {ranking.length === 0 ? (
+                <p style={{textAlign: 'center', color: '#666', padding: '2rem'}}>Seja o primeiro a entrar no Mural! 🔥</p>
+              ) : (
+                ranking.map((r, i) => (
+                  <div key={i} className={`ranking-item ${formatName(r.name) === firstName ? 'current' : ''}`}>
+                    <span style={{color: '#fff', fontWeight: 800}}>
+                      {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`} {formatName(r.name)}
+                    </span>
+                    <span style={{color: 'var(--gold)', fontWeight: 900}}>{r.points.toLocaleString()} 🔥</span>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
+          <button className="btn-primary" style={{width: '100%', marginTop: 'auto', whiteSpace: 'nowrap'}} onClick={() => setScreen('missao')}>
             O que Deus me diz agora?
           </button>
         </div>
