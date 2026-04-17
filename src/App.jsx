@@ -226,30 +226,25 @@ export default function App() {
       <ParticleBackground />
 
       {screen === 'welcome' && (
-        <div className="screen welcome-screen" style={{ paddingTop: '8rem' }}>
-          <header style={{ position: 'absolute', top: '3.5rem', width: '100%', textAlign: 'center' }}>
-            <p style={{ color: 'var(--gold)', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '4px', fontSize: '0.9rem' }}>Tinder Vocacional</p>
-            <div className="card-divider" style={{ margin: '0.5rem auto', width: '30px' }}></div>
-          </header>
-          
-          <div className="logo-wrapper" style={{ marginBottom: '1.5rem' }}>
+        <div className="screen welcome-screen" style={{ justifyContent: 'center', gap: '1.5rem' }}>
+          <div className="logo-wrapper" style={{ marginBottom: '1rem' }}>
             <div className="logo-aura"></div>
-            <img src={logo} alt="Shalom" className="welcome-logo" style={{ width: '150px' }} />
+            <img src={logo} alt="Shalom" className="welcome-logo" style={{ width: '160px' }} />
           </div>
 
-          <h1 style={{ fontSize: '2.4rem', fontWeight: 900, marginBottom: '1.5rem', padding: '0 1rem' }}>
+          <h1 style={{ fontSize: '2.4rem', fontWeight: 900, marginBottom: '0.5rem', padding: '0 1rem' }}>
             Será que sinto atração pelo Carisma Shalom?
           </h1>
 
+          <p style={{ fontSize: '1.1rem', opacity: 0.7, fontWeight: 500, color: '#fff', maxWidth: '300px', margin: '0 auto 1.5rem', lineHeight: 1.4 }}>
+            Faça o teste, se seu coração arder arraste para direita!
+          </p>
+
           <div style={{ width: '100%', maxWidth: '300px', margin: '0 auto' }}>
             <button className="btn-primary" style={{ width: '100%' }} onClick={() => setScreen('swipe')}>
-              Começar jornada <ChevronRight size={18} />
+              COMEÇAR A JORNADA
             </button>
           </div>
-          
-          <p style={{ marginTop: '2.5rem', fontSize: '0.85rem', opacity: 0.9, fontWeight: 800, letterSpacing: '1px', color: 'var(--gold)', lineHeight: 1.5 }}>
-            SE SEU CORAÇÃO ARDER,<br/>CLIQUE NO CORAÇÃO PARA ESCOLHER
-          </p>
         </div>
       )}
 
