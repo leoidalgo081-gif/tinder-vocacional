@@ -355,23 +355,34 @@ export default function App() {
       )}
 
       {screen === 'missao' && (
-        <div className="screen">
+        <div className="screen" style={{justifyContent: 'center'}}>
           <div className="mission-box">
             <p className="mission-text">
-              "Aos 20 anos, eu não tinha nada para oferecer à Igreja a não ser a minha própria juventude. Coloquei minha vida aos pés de Pedro como um presente para o mundo."
+              "Tudo o que temos e somos, em nossa pobreza, queremos colocar aos pés de Pedro como prova do nosso amor a Cristo e à Igreja."
             </p>
-            <p className="mission-author">— Moysés Azevedo, Fundador</p>
+            <p className="mission-author">— Moysés Azevedo</p>
           </div>
           
-          <div style={{marginTop: '2rem', padding: '2rem', background: 'rgba(255, 60, 0, 0.1)', borderRadius: '24px', border: '1px solid var(--red-bright)'}}>
-            <h3 style={{fontSize: '1.6rem', lineHeight: 1.4, color: '#fff', fontWeight: 900}}>
-              {firstName}, se você pudesse dar um presente ao Papa hoje, o que você daria?
+          <button className="btn-primary" style={{marginTop: '3rem', width: '100%'}} onClick={() => setScreen('missao-final')}>
+            CONTINUAR <ChevronRight size={18} />
+          </button>
+        </div>
+      )}
+
+      {screen === 'missao-final' && (
+        <div className="screen" style={{justifyContent: 'center'}}>
+          <div style={{marginTop: '2rem', padding: '2.5rem 2rem', background: 'rgba(255, 60, 0, 0.1)', borderRadius: '32px', border: '1px solid var(--red-bright)', boxShadow: '0 0 40px rgba(255, 60, 0, 0.2)'}}>
+            <h3 style={{fontSize: '1.8rem', lineHeight: 1.3, color: '#fff', fontWeight: 900, textTransform: 'uppercase'}}>
+              {firstName}, se você tivesse que dar um presente para o Papa hoje, o que você daria?
             </h3>
-            <span className="moyses-highlight">Sua vida é o presente!</span>
+            <div className="card-divider" style={{margin: '2rem auto', width: '40px'}}></div>
+            <p style={{color: 'var(--gold)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.8rem'}}>
+               Vá ao stand e converse com um dos vocacionados! 🏃‍♂️💬
+            </p>
           </div>
 
-          <button className="btn-primary" style={{marginTop: '3rem', width: '100%'}} onClick={() => window.location.reload()}>
-            Recomeçar a Jornada
+          <button className="btn-primary btn-small" style={{marginTop: '3rem', width: '100%'}} onClick={() => window.location.reload()}>
+            RECOMEÇAR JORNADA
           </button>
         </div>
       )}
