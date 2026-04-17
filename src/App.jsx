@@ -289,7 +289,7 @@ export default function App() {
           <div className="swipe-container">
             <div className={`swipe-card ${swipeDirection ? `swipe-${swipeDirection}` : ''}`} style={{backgroundImage: `url(${QUESTIONS[currentIndex].bg})`}}>
               <div className="card-inner-border" />
-              <div className="swipe-stamp stamp-like">AMÉM</div>
+              <div className="swipe-stamp stamp-like">ARDEU!</div>
               <div className="swipe-stamp stamp-nope">AINDA NÃO</div>
               <p className="card-text">
                 <TypewriterText text={QUESTIONS[currentIndex].text} onComplete={handleTypingComplete} />
