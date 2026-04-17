@@ -247,7 +247,7 @@ export default function App() {
       )}
 
       {screen === 'registration' && (
-        <div className="screen" style={{justifyContent: 'center', textAlign: 'left'}}>
+        <div className="screen" style={{textAlign: 'left'}}>
           <h2 style={{color: '#fff', fontSize: '2.4rem', marginBottom: '1rem'}}>Quase lá!</h2>
           <p style={{color: 'var(--text-muted)', marginBottom: '2.5rem', fontSize: '1.1rem'}}>Deixe seus dados para ver o seu resultado:</p>
           
@@ -304,14 +304,14 @@ export default function App() {
       )}
 
       {screen === 'calculating' && (
-        <div className="screen" style={{justifyContent: 'center', alignItems: 'center'}}>
+        <div className="screen" style={{alignItems: 'center', paddingTop: '30%'}}>
           <div className="loading-circle"></div>
           <h2 className="calculating-text">Sintonizando com o Carisma...</h2>
         </div>
       )}
 
       {screen === 'result' && (
-        <div className="screen" style={{justifyContent: 'center'}}>
+        <div className="screen">
           <div className="fire-wrapper">
              <div className="fire-bg-glow" />
              <Flame className="fire-icon" size={110} fill="#ff3c00" strokeWidth={1} />
@@ -348,7 +348,7 @@ export default function App() {
       )}
 
       {screen === 'missao' && (
-        <div className="screen" style={{justifyContent: 'center'}}>
+        <div className="screen">
           <div className="mission-box">
             <p className="mission-text">
               "Aos 20 anos, eu não tinha nada para oferecer à Igreja a não ser a minha própria juventude. Coloquei minha vida aos pés de Pedro como um presente para o mundo."
