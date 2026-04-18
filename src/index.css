@@ -1357,6 +1357,8 @@ h2 {
   background: rgba(0,0,0,0.25);
 }
 
+/* ── Divider ── */
+.monitor-divider {
   width: 1px;
   background: linear-gradient(180deg, transparent, rgba(212,175,55,0.2), transparent);
   flex-shrink: 0;
