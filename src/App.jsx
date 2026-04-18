@@ -34,6 +34,31 @@ const QUESTIONS = [
   { id: 12, text: "Desejar, como oferta, gastar meus dias aos pés de Pedro, pela Igreja e pela humanidade, no Carisma Shalom.", bg: bg12 }
 ];
 
+const QUIZ_QUESTIONS = [
+  {
+    question: "Qual é o cerne da Vocação Shalom?",
+    correct: "Amor esponsal",
+    options: ["Amor esponsal", "Missão evangelizadora", "Vida comunitária", "Oração contemplativa"]
+  },
+  {
+    question: "Quais são os fundamentos do Carisma Shalom?",
+    correct: "Contemplação, Unidade e Evangelização",
+    options: ["Contemplação, Unidade e Evangelização", "Oração, Missão e Serviço", "Fé, Esperança e Caridade", "Louvor, Palavra e Sacramento"]
+  },
+  {
+    question: "Quais são os dois padroeiros do Carisma Shalom?",
+    correct: "Santa Teresa e São Francisco",
+    options: ["Santa Teresa e São Francisco", "São João e Nossa Senhora", "Santo Agostinho e Santa Clara", "São Pedro e São Paulo"]
+  },
+  {
+    question: "Qual Papa abençoou o nascimento do Carisma Shalom em seus pés?",
+    correct: "São João Paulo II",
+    options: ["São João Paulo II", "Papa Francisco", "Bento XVI", "João XXIII"]
+  }
+];
+
+const QUIZ_BONUS = 500; // pts per correct answer
+
 const BurningHeartIcon = ({ size = 48 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path className="svg-flame-slow" d="M12 2C10 4 8 8 12 12C16 8 14 4 12 2Z" fill="#ff7b00" />
@@ -122,6 +147,10 @@ export default function App() {
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingMural, setIsLoadingMural] = useState(false);
   const [muralError, setMuralError] = useState(null);
+  const [quizIndex, setQuizIndex] = useState(0);
+  const [quizBonus, setQuizBonus] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [answered, setAnswered] = useState(false);
 
   const [userData, setUserData] = useState({ name: '', phone: '', age: '' });
   const [displayedPoints, setDisplayedPoints] = useState(0);
@@ -151,7 +180,11 @@ export default function App() {
         setSwipeDirection(null);
         setIsTyping(true);
       } else {
-        setScreen('calculating');
+        setScreen('quiz');
+        setQuizIndex(0);
+        setQuizBonus(0);
+        setSelectedAnswer(null);
+        setAnswered(false);
       }
     }, 500);
   }, [currentIndex, swipeDirection, isTyping]);
@@ -166,12 +199,32 @@ export default function App() {
       const timer = setTimeout(() => {
         const base = score * 1000;
         const randomBonus = score > 0 ? Math.floor(Math.random() * 500) : 0;
-        setFinalFictitiousPoints(base + randomBonus);
+        setFinalFictitiousPoints(base + randomBonus + quizBonus);
         setScreen('registration');
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [screen, score]);
+  }, [screen, score, quizBonus]);
+
+  const handleQuizAnswer = (option) => {
+    if (answered) return;
+    setSelectedAnswer(option);
+    setAnswered(true);
+    const isCorrect = option === QUIZ_QUESTIONS[quizIndex].correct;
+    if (isCorrect) {
+      triggerCelebration();
+      setQuizBonus(b => b + QUIZ_BONUS);
+    }
+    setTimeout(() => {
+      if (quizIndex < QUIZ_QUESTIONS.length - 1) {
+        setQuizIndex(i => i + 1);
+        setSelectedAnswer(null);
+        setAnswered(false);
+      } else {
+        setScreen('calculating');
+      }
+    }, 1200);
+  };
 
   useEffect(() => {
     if (screen === 'result') {
@@ -303,6 +356,68 @@ export default function App() {
           </button>
         </div>
       )}
+
+      {screen === 'quiz' && (() => {
+        const q = QUIZ_QUESTIONS[quizIndex];
+        return (
+          <div className="screen">
+            {/* Header */}
+            <div style={{flexShrink: 0, marginBottom: '1.5rem'}}>
+              <p style={{color: 'var(--gold)', fontWeight: 900, fontSize: '0.72rem', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '0.8rem'}}>
+                🧠 Quiz do Carisma — {quizIndex + 1}/{QUIZ_QUESTIONS.length}
+              </p>
+              <div className="progress-container">
+                <div className="progress-bar" style={{width: `${((quizIndex + 1) / QUIZ_QUESTIONS.length) * 100}%`, background: 'linear-gradient(90deg, var(--gold), #ff8800)'}}></div>
+              </div>
+              <p style={{color: 'rgba(255,255,255,0.45)', fontSize: '0.75rem', marginTop: '0.4rem'}}>
+                Cada acerto vale +{QUIZ_BONUS.toLocaleString()} pts 🔥
+              </p>
+            </div>
+
+            {/* Question */}
+            <div style={{background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', padding: '1.5rem', marginBottom: '1.5rem', flexShrink: 0}}>
+              <h2 style={{fontSize: 'clamp(1.1rem, 4.5vw, 1.4rem)', fontWeight: 900, lineHeight: 1.35, color: '#fff', margin: 0}}>
+                {q.question}
+              </h2>
+            </div>
+
+            {/* Options */}
+            <div style={{display: 'flex', flexDirection: 'column', gap: '0.75rem', flex: 1}}>
+              {q.options.map((option, i) => {
+                let bg = 'rgba(255,255,255,0.05)';
+                let border = '1px solid rgba(255,255,255,0.12)';
+                let icon = '';
+                if (answered) {
+                  if (option === q.correct) { bg = 'rgba(0,200,100,0.2)'; border = '1.5px solid #00c864'; icon = ' ✅'; }
+                  else if (option === selectedAnswer) { bg = 'rgba(255,60,0,0.2)'; border = '1.5px solid #ff3c00'; icon = ' ❌'; }
+                }
+                return (
+                  <button
+                    key={i}
+                    onClick={() => handleQuizAnswer(option)}
+                    disabled={answered}
+                    style={{
+                      background: bg,
+                      border,
+                      borderRadius: '14px',
+                      padding: '1rem 1.2rem',
+                      color: '#fff',
+                      fontSize: 'clamp(0.85rem, 3.5vw, 1rem)',
+                      fontWeight: 700,
+                      textAlign: 'left',
+                      cursor: answered ? 'default' : 'pointer',
+                      transition: 'all 0.3s ease',
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {option}{icon}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {screen === 'swipe' && (
         <div className="screen" style={{padding: '0'}}>
