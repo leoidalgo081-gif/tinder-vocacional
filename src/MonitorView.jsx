@@ -58,7 +58,7 @@ export default function MonitorView() {
       <header className="monitor-header">
         <img src={logo} alt="Shalom" className="monitor-logo" />
         <div className="monitor-header-text">
-          <h1 className="monitor-title">Tinder Vocacional</h1>
+          <h1 className="monitor-title">Top Matching da Vocação Shalom!</h1>
           <p className="monitor-subtitle">Ranking do Ardor 🔥</p>
         </div>
         <div className="monitor-live">
