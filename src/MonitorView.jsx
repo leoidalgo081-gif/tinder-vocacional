@@ -79,33 +79,40 @@ export default function MonitorView() {
             </p>
           )}
 
-          {/* 2nd place */}
-          {top3[1] && (
-            <div className="monitor-podium monitor-podium-2" style={{ animationDelay: '0.1s' }}>
-              <div className="monitor-podium-medal">🥈</div>
-              <div className="monitor-podium-name">{formatName(top3[1].name)}</div>
-              <div className="monitor-podium-pts">{top3[1].points.toLocaleString()} <span>pts</span></div>
-              <div className="monitor-podium-bar" style={{ height: '120px', background: 'linear-gradient(180deg, #a8a9ad, #6e6e6e)' }} />
-            </div>
-          )}
+          {top3.length > 0 && (
+            <div className="monitor-podium-stage">
 
-          {/* 1st place */}
-          {top3[0] && (
-            <div className="monitor-podium monitor-podium-1" style={{ animationDelay: '0s' }}>
-              <div className="monitor-podium-medal monitor-podium-crown">🥇</div>
-              <div className="monitor-podium-name monitor-podium-name-gold">{formatName(top3[0].name)}</div>
-              <div className="monitor-podium-pts monitor-podium-pts-gold">{top3[0].points.toLocaleString()} <span>pts</span></div>
-              <div className="monitor-podium-bar" style={{ height: '160px', background: 'linear-gradient(180deg, var(--gold), #8B6914)' }} />
-            </div>
-          )}
+              {/* 2nd place — LEFT */}
+              {top3[1] ? (
+                <div className="monitor-podium monitor-podium-2">
+                  <div className="monitor-podium-medal">🥈</div>
+                  <div className="monitor-podium-name">{top3[1] ? formatName(top3[1].name) : ''}</div>
+                  <div className="monitor-podium-pts">{top3[1]?.points.toLocaleString()} <span>pts</span></div>
+                  <div className="monitor-podium-bar mpb-silver" />
+                  <div className="monitor-podium-num">2</div>
+                </div>
+              ) : <div className="monitor-podium-empty" />}
 
-          {/* 3rd place */}
-          {top3[2] && (
-            <div className="monitor-podium monitor-podium-3" style={{ animationDelay: '0.2s' }}>
-              <div className="monitor-podium-medal">🥉</div>
-              <div className="monitor-podium-name">{formatName(top3[2].name)}</div>
-              <div className="monitor-podium-pts">{top3[2].points.toLocaleString()} <span>pts</span></div>
-              <div className="monitor-podium-bar" style={{ height: '90px', background: 'linear-gradient(180deg, #cd7f32, #7a4c1d)' }} />
+              {/* 1st place — CENTER */}
+              <div className="monitor-podium monitor-podium-1">
+                <div className="monitor-podium-medal monitor-podium-crown">🥇</div>
+                <div className="monitor-podium-name monitor-podium-name-gold">{formatName(top3[0].name)}</div>
+                <div className="monitor-podium-pts monitor-podium-pts-gold">{top3[0].points.toLocaleString()} <span>pts</span></div>
+                <div className="monitor-podium-bar mpb-gold" />
+                <div className="monitor-podium-num">1</div>
+              </div>
+
+              {/* 3rd place — RIGHT */}
+              {top3[2] ? (
+                <div className="monitor-podium monitor-podium-3">
+                  <div className="monitor-podium-medal">🥉</div>
+                  <div className="monitor-podium-name">{formatName(top3[2].name)}</div>
+                  <div className="monitor-podium-pts">{top3[2].points.toLocaleString()} <span>pts</span></div>
+                  <div className="monitor-podium-bar mpb-bronze" />
+                  <div className="monitor-podium-num">3</div>
+                </div>
+              ) : <div className="monitor-podium-empty" />}
+
             </div>
           )}
         </div>
