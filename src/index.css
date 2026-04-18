@@ -1131,3 +1131,325 @@ h2 {
   border-left: 3px solid var(--gold);
   color: var(--gold);
 }
+
+/* ═══════════════════════════════════════════
+   MONITOR VIEW — Telão de Ranking ao Vivo
+   Acesso: /#monitor
+═══════════════════════════════════════════ */
+@keyframes monitorFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.8); }
+}
+
+@keyframes barRise {
+  from { height: 0 !important; }
+  to   { /* natural height */ }
+}
+
+@keyframes podiumFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+.monitor-root {
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(ellipse at 30% 0%, #1a0a00 0%, #050505 60%),
+              radial-gradient(ellipse at 70% 100%, #0a0015 0%, transparent 60%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Inter', sans-serif;
+  color: #fff;
+  position: relative;
+}
+
+.monitor-bg-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.monitor-bg-glow-1 {
+  width: 500px; height: 500px;
+  background: rgba(180, 80, 0, 0.15);
+  top: -100px; left: -100px;
+}
+.monitor-bg-glow-2 {
+  width: 400px; height: 400px;
+  background: rgba(100, 0, 150, 0.1);
+  bottom: -80px; right: -80px;
+}
+
+.monitor-header {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1.2rem 2.5rem;
+  border-bottom: 1px solid rgba(212,175,55,0.15);
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.monitor-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(255,120,0,0.5));
+}
+
+.monitor-header-text { flex: 1; }
+
+.monitor-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 900;
+  background: linear-gradient(90deg, #fff, var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 0.15rem;
+}
+
+.monitor-subtitle {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.monitor-live {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,0,0,0.12);
+  border: 1px solid rgba(255,60,0,0.35);
+  border-radius: 100px;
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ff4444;
+}
+
+.monitor-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff4444;
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+.monitor-live-dot.refreshing {
+  background: var(--gold);
+  animation: livePulse 0.4s ease-in-out infinite;
+}
+
+.monitor-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
+}
+
+/* ── Left: Top 3 Podium ── */
+.monitor-top3-panel {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 2rem 2.5rem 0;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+
+.monitor-section-label {
+  position: absolute;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+}
+
+.monitor-podium-wrap {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1.5rem;
+  width: 100%;
+  height: 100%;
+  padding-bottom: 0;
+}
+
+/* Podium card */
+.monitor-podium {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: monitorFadeIn 0.8s ease both, podiumFloat 6s ease-in-out infinite;
+}
+
+.monitor-podium-1 {
+  order: 2;
+  animation-duration: 0.6s, 5s;
+}
+.monitor-podium-2 {
+  order: 1;
+  animation-duration: 0.8s, 6s;
+  animation-delay: 0.1s, 0.5s;
+}
+.monitor-podium-3 {
+  order: 3;
+  animation-duration: 1s, 7s;
+  animation-delay: 0.2s, 1s;
+}
+
+.monitor-podium-medal {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 0 12px rgba(255,200,0,0.5));
+}
+
+.monitor-podium-crown {
+  font-size: 3.2rem;
+  animation: podiumFloat 3s ease-in-out infinite;
+}
+
+.monitor-podium-name {
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-weight: 900;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 0.3rem;
+  text-shadow: 0 0 20px rgba(255,150,0,0.4);
+  max-width: 200px;
+  word-break: break-word;
+}
+
+.monitor-podium-name-gold {
+  background: linear-gradient(180deg, #fff 0%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.monitor-podium-pts {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 0.8rem;
+}
+.monitor-podium-pts span { font-size: 0.75rem; }
+.monitor-podium-pts-gold {
+  color: var(--gold);
+  font-size: 1.2rem;
+}
+
+.monitor-podium-bar {
+  width: clamp(80px, 12vw, 140px);
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.4);
+}
+
+/* ── Divider ── */
+.monitor-divider {
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(212,175,55,0.2), transparent);
+  flex-shrink: 0;
+}
+
+/* ── Right: Full Ranking ── */
+.monitor-ranking-panel {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.monitor-ranking-panel .monitor-section-label {
+  position: static;
+  transform: none;
+  left: auto;
+  top: auto;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.monitor-ranking-list {
+  overflow-y: auto;
+  flex: 1;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(212,175,55,0.2) transparent;
+}
+
+.monitor-ranking-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 10px;
+  margin-bottom: 0.3rem;
+  animation: monitorFadeIn 0.5s ease both;
+  transition: background 0.2s;
+}
+
+.monitor-ranking-row:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.monitor-ranking-row-top {
+  background: rgba(212,175,55,0.07);
+  border: 1px solid rgba(212,175,55,0.15);
+}
+
+.monitor-ranking-pos {
+  font-size: 1rem;
+  min-width: 2.5rem;
+  text-align: center;
+  font-weight: 900;
+}
+
+.monitor-ranking-name {
+  flex: 1;
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  font-weight: 800;
+  color: #fff;
+}
+
+.monitor-ranking-pts {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+/* ── Footer ── */
+.monitor-footer {
+  padding: 0.6rem 2.5rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.2);
+  display: flex;
+  justify-content: center;
+  background: rgba(0,0,0,0.3);
+  flex-shrink: 0;
+  letter-spacing: 0.5px;
+}
