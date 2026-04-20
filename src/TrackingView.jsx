@@ -54,6 +54,7 @@ export default function TrackingView() {
   };
 
   const getDefaultTracking = () => ({
+    anotacoes: '',
     aceitouConviteVigilia: '',
     conversouBem: '',
     rezei: '',
@@ -440,6 +441,22 @@ export default function TrackingView() {
 
                    {/* Formulário Completo */}
                    <div className="user-fields">
+                        
+                        {/* Bloco de Anotações Livres */}
+                        <div className="field-group" style={{marginBottom: '1.5rem'}}>
+                          <label className="field-label" style={{color: '#fff', fontSize: '1rem'}}>📝 Anotações Livres</label>
+                          <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.5rem'}}>
+                            Escreva aqui o histórico, pedidos de oração ou informações importantes sobre a pessoa.
+                          </span>
+                          <textarea 
+                            className="field-select" 
+                            style={{minHeight: '100px', resize: 'vertical', paddingTop: '0.8rem', paddingBottom: '0.8rem', lineHeight: '1.4', fontFamily: 'inherit'}}
+                            placeholder="Digite suas informações de acompanhamento aqui..."
+                            value={person.tracking.anotacoes || ''} 
+                            onChange={(e) => updateTracking(person.rank, 'anotacoes', e.target.value)}
+                          />
+                        </div>
+
                         {/* 1. O Match (Stand) */}
                         <div className="field-group">
                           <label className="field-label" style={{color: '#D4AF37', borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '0.3rem', fontSize: '1rem'}}>
