@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Phone, MessageSquare, PlusCircle, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Lock, Phone, MessageSquare, PlusCircle, CheckCircle2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import './TrackingView.css';
 
 // The provided participant list
@@ -43,6 +43,11 @@ export default function TrackingView() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [view, setView] = useState('list'); // 'list' | 'dashboard'
   const [data, setData] = useState([]);
+  const [expanded, setExpanded] = useState({});
+
+  const toggleExpand = (rank) => {
+    setExpanded(prev => ({ ...prev, [rank]: !prev[rank] }));
+  };
 
   const getDefaultTracking = () => ({
     aceitouConvite: '',
@@ -250,18 +255,26 @@ export default function TrackingView() {
               return (
                 <div key={person.rank} className="user-card">
                   
-                  <div className="user-header">
+                  <div className="user-header" onClick={() => toggleExpand(person.rank)} style={{cursor: 'pointer'}}>
                     <div className="user-info">
                        <span className="user-rank">Posição #{person.rank}</span>
                        <h3 className="user-name">{person.name} <span style={{fontSize: '0.8rem', color: '#b4b4b4', fontWeight: '400'}}>({person.age} anos)</span></h3>
-                       <p className="user-points">{person.score} pontos</p>
+                       <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                         <p className="user-points" style={{margin: 0}}>{person.score} pontos</p>
+                         <span style={{color: progress === 100 ? '#00c864' : '#D4AF37', fontSize: '0.8rem', fontWeight: 'bold'}}>{progress}%</span>
+                       </div>
                     </div>
-                    <a href={person.link.replace('https://wa.me/', 'https://api.whatsapp.com/send/?phone=').replace('?text=', '&text=')} target="_blank" rel="noreferrer" className="wa-btn">
-                      <MessageSquare size={16} fill="currentColor" /> WhatsApp
-                    </a>
+                    <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
+                      <a href={person.link.replace('https://wa.me/', 'https://api.whatsapp.com/send/?phone=').replace('?text=', '&text=')} target="_blank" rel="noreferrer" className="wa-btn" onClick={(e) => e.stopPropagation()}>
+                        <MessageSquare size={16} fill="currentColor" /> WA
+                      </a>
+                      <div className="expand-icon" style={{color: '#D4AF37', transition: 'transform 0.3s'}}>
+                        {expanded[person.rank] ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="card-progress-container">
+                  <div className="card-progress-container" onClick={() => toggleExpand(person.rank)} style={{cursor: 'pointer'}}>
                     <div className="card-progress-header">
                       <span>Progresso da Conversa</span>
                       <span style={{color: progress === 100 ? '#D4AF37' : '#fff'}}>{progress}%</span>
@@ -271,156 +284,174 @@ export default function TrackingView() {
                     </div>
                   </div>
 
-                  <div className="user-fields">
-                    {/* Primeiro Contato */}
-                    <div className="field-group">
-                      <label className="field-label" style={{color: '#D4AF37', borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '0.3rem'}}>1. O Match (Stand)</label>
-                      <label className="field-label" style={{marginTop: '0.4rem'}}>Aceitou o convite / Abertura?</label>
-                      <select 
-                        className="field-select" 
-                        value={person.tracking.aceitouConvite} 
-                        onChange={(e) => updateTracking(person.rank, 'aceitouConvite', e.target.value)}
-                      >
-                        <option value="">Selecione...</option>
-                        <option value="Sim aceitou">Sim, aceitou muito bem!</option>
-                        <option value="Não pode agora mas quer conhecer">Curtiu, mas não pode agora</option>
-                        <option value="Não respondeu">Fechado / Não</option>
-                      </select>
-                    </div>
-
-                    <div className="field-group">
-                      <label className="field-label">Conversei sinceramente com ele(a)?</label>
-                      <select 
-                        className="field-select" 
-                        value={person.tracking.conversouBem} 
-                        onChange={(e) => updateTracking(person.rank, 'conversouBem', e.target.value)}
-                      >
-                        <option value="">Selecione...</option>
-                        <option value="Sim">Sim, foi profundo</option>
-                        <option value="Não">Não deu tempo/profundidade</option>
-                        <option value="Não respondeu mt">Ele(a) não abriu muito</option>
-                      </select>
-                    </div>
-
-                    {/* Espiritual */}
-                    <div className="field-group" style={{marginTop: '0.5rem'}}>
-                      <label className="field-label" style={{color: '#90caf9', borderBottom: '1px solid rgba(144,202,249,0.2)', paddingBottom: '0.3rem'}}>2. Espiritual</label>
-                      <label className="field-label" style={{marginTop: '0.4rem'}}>Rezei por ele(a) hoje? 🙏</label>
-                      <select 
-                        className="field-select" 
-                        value={person.tracking.rezei} 
-                        onChange={(e) => updateTracking(person.rank, 'rezei', e.target.value)}
-                        style={{borderColor: person.tracking.rezei === 'Sim' ? '#90caf9' : 'rgba(255,255,255,0.1)'}}
-                      >
-                        <option value="">Selecione...</option>
-                        <option value="Sim">Sim, eu o(a) entreguei a Deus!</option>
-                        <option value="Ainda não">Ainda não...</option>
-                      </select>
-                    </div>
-
-                    {/* Quando */}
-                    <div className="field-group">
-                      <label className="field-label">Marcou para quando?</label>
-                      <input 
-                        type="date" 
-                        className="field-date" 
-                        value={person.tracking.quando} 
-                        onChange={(e) => updateTracking(person.rank, 'quando', e.target.value)}
-                      />
-                    </div>
-
-                    {/* Vigília */}
-                    <div className="field-group" style={{marginTop: '0.5rem'}}>
-                      <label className="field-label" style={{color: '#ff3c00', borderBottom: '1px solid rgba(255,60,0,0.2)', paddingBottom: '0.3rem'}}>3. O Evento (Vigília)</label>
-                      <label className="field-label" style={{marginTop: '0.4rem'}}>Aceitou ir para a Vigília?</label>
-                      <select 
-                        className="field-select" 
-                        value={person.tracking.aceitouVigilia} 
-                        onChange={(e) => updateTracking(person.rank, 'aceitouVigilia', e.target.value)}
-                      >
-                        <option value="">Selecione...</option>
-                        <option value="Sim aceitou">Sim, aceitou!</option>
-                        <option value="Não pode agora mas quer conhecer">Não pode agora, mas quer conhecer</option>
-                        <option value="Recusou">Recusou</option>
-                      </select>
-                    </div>
-
-                    {/* 2a Abordagem */}
-                    <div className="field-group">
-                      <label className="field-label">2ª Abordagem na Semana?</label>
-                      <select 
-                        className="field-select" 
-                        value={person.tracking.segundaAbordagem} 
-                        onChange={(e) => updateTracking(person.rank, 'segundaAbordagem', e.target.value)}
-                      >
-                        <option value="">Selecione...</option>
-                        <option value="Sim eu falei com ela">Sim, eu falei</option>
-                        <option value="Ela vai interessada">Ela que veio interessada</option>
-                        <option value="Não falei ainda">Ainda não mandei</option>
-                      </select>
-                    </div>
-
-                    {/* Convidar amigo */}
-                    <div className="field-group">
-                      <label className="field-label">Pedi pra levar um amigo(a)?</label>
-                      <select 
-                        className="field-select" 
-                        value={person.tracking.convidarAmigo} 
-                        onChange={(e) => updateTracking(person.rank, 'convidarAmigo', e.target.value)}
-                      >
-                        <option value="">Selecione...</option>
-                        <option value="Sim ela aceitou e vai levar alguém">Sim, vai levar alguém!</option>
-                        <option value="Não consegue">Não conseguiu / vai sozinho(a)</option>
-                      </select>
-                    </div>
-
-                    {/* Ajuda ida */}
-                    <div className="field-group">
-                      <label className="field-label">Precisa de ajuda com o trajeto?</label>
-                      <select 
-                        className="field-select" 
-                        value={person.tracking.ajudaIda} 
-                        onChange={(e) => updateTracking(person.rank, 'ajudaIda', e.target.value)}
-                      >
-                        <option value="">Selecione...</option>
-                        <option value="Ela falou q é tranquilo e chega">Tranquilo, ele(a) chega!</option>
-                        <option value="Sim">Sim, me coloquei para ajudar</option>
-                        <option value="e resposta nao respondeu, nao ligou">Não respondeu / Não ligou</option>
-                      </select>
-                    </div>
-
-                    {/* Aceitou ir pro grupo de oração */}
-                    <div className="field-group">
-                      <label className="field-label">Aceitou o convite para o Grupo de Oração?</label>
-                      <select 
-                        className="field-select" 
-                        value={person.tracking.grupoDeOracao} 
-                        onChange={(e) => updateTracking(person.rank, 'grupoDeOracao', e.target.value)}
-                      >
-                        <option value="">Selecione...</option>
-                        <option value="Sim">Sim!</option>
-                        <option value="Ainda vai pensar">Ainda vai pensar</option>
-                        <option value="Não">Não</option>
-                      </select>
-                    </div>
-
-                    {/* Nivel de Interesse */}
-                    <div className="field-group" style={{marginTop: '0.5rem', marginBottom: '0.5rem'}}>
-                      <label className="field-label" style={{color: '#D4AF37'}}>Nível de Interesse (Termômetro 🔥)</label>
-                      <div className="interest-rating">
-                        {[1, 2, 3, 4, 5].map(star => (
-                          <button 
-                            key={star}
-                            className={`star-btn ${person.tracking.interesse >= star ? 'active' : ''}`}
-                            onClick={() => updateTracking(person.rank, 'interesse', star)}
+                  {expanded[person.rank] && (
+                    <div className="user-card-body slide-down">
+                      <div className="user-fields">
+                        {/* Primeiro Contato */}
+                        <div className="field-group">
+                          <label className="field-label" style={{color: '#D4AF37', borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '0.3rem'}}>1. O Match (Stand)</label>
+                          <label className="field-label" style={{marginTop: '0.4rem'}}>Aceitou o convite / Abertura?</label>
+                          <select 
+                            className="field-select" 
+                            value={person.tracking.aceitouConvite} 
+                            onChange={(e) => updateTracking(person.rank, 'aceitouConvite', e.target.value)}
                           >
-                            ★
-                          </button>
-                        ))}
+                            <option value="">Selecione...</option>
+                            <option value="Sim aceitou">Sim, aceitou muito bem!</option>
+                            <option value="Não pode agora mas quer conhecer">Curtiu, mas não pode agora</option>
+                            <option value="Não respondeu">Fechado / Não</option>
+                          </select>
+                        </div>
+
+                        <div className="field-group">
+                          <label className="field-label">Conversei sinceramente com ele(a)?</label>
+                          <select 
+                            className="field-select" 
+                            value={person.tracking.conversouBem} 
+                            onChange={(e) => updateTracking(person.rank, 'conversouBem', e.target.value)}
+                          >
+                            <option value="">Selecione...</option>
+                            <option value="Sim">Sim, foi profundo</option>
+                            <option value="Não">Não deu tempo/profundidade</option>
+                            <option value="Não respondeu mt">Ele(a) não abriu muito</option>
+                          </select>
+                        </div>
+
+                        {/* Espiritual */}
+                        <div className="field-group" style={{marginTop: '0.5rem'}}>
+                          <label className="field-label" style={{color: '#90caf9', borderBottom: '1px solid rgba(144,202,249,0.2)', paddingBottom: '0.3rem'}}>2. Espiritual</label>
+                          <label className="field-label" style={{marginTop: '0.4rem'}}>Rezei por ele(a) hoje? 🙏</label>
+                          <select 
+                            className="field-select" 
+                            value={person.tracking.rezei} 
+                            onChange={(e) => updateTracking(person.rank, 'rezei', e.target.value)}
+                            style={{borderColor: person.tracking.rezei === 'Sim' ? '#90caf9' : 'rgba(255,255,255,0.1)'}}
+                          >
+                            <option value="">Selecione...</option>
+                            <option value="Sim">Sim, eu o(a) entreguei a Deus!</option>
+                            <option value="Ainda não">Ainda não...</option>
+                          </select>
+                        </div>
+
+                        {/* Quando */}
+                        <div className="field-group">
+                          <label className="field-label">Marcou para quando?</label>
+                          <input 
+                            type="date" 
+                            className="field-date" 
+                            value={person.tracking.quando} 
+                            onChange={(e) => updateTracking(person.rank, 'quando', e.target.value)}
+                          />
+                        </div>
+
+                        {/* Vigília */}
+                        <div className="field-group" style={{marginTop: '0.5rem'}}>
+                          <label className="field-label" style={{color: '#ff3c00', borderBottom: '1px solid rgba(255,60,0,0.2)', paddingBottom: '0.3rem'}}>3. O Evento (Vigília)</label>
+                          <label className="field-label" style={{marginTop: '0.4rem'}}>Aceitou ir para a Vigília?</label>
+                          <select 
+                            className="field-select" 
+                            value={person.tracking.aceitouVigilia} 
+                            onChange={(e) => updateTracking(person.rank, 'aceitouVigilia', e.target.value)}
+                          >
+                            <option value="">Selecione...</option>
+                            <option value="Sim aceitou">Sim, aceitou!</option>
+                            <option value="Não pode agora mas quer conhecer">Não pode agora, mas quer conhecer</option>
+                            <option value="Recusou">Recusou</option>
+                          </select>
+                        </div>
+
+                        {/* 2a Abordagem */}
+                        <div className="field-group">
+                          <label className="field-label">2ª Abordagem na Semana?</label>
+                          <select 
+                            className="field-select" 
+                            value={person.tracking.segundaAbordagem} 
+                            onChange={(e) => updateTracking(person.rank, 'segundaAbordagem', e.target.value)}
+                          >
+                            <option value="">Selecione...</option>
+                            <option value="Sim eu falei com ela">Sim, eu falei</option>
+                            <option value="Ela vai interessada">Ela que veio interessada</option>
+                            <option value="Não falei ainda">Ainda não mandei</option>
+                          </select>
+                        </div>
+
+                        {/* Convidar amigo */}
+                        <div className="field-group">
+                          <label className="field-label">Pedi pra levar um amigo(a)?</label>
+                          <select 
+                            className="field-select" 
+                            value={person.tracking.convidarAmigo} 
+                            onChange={(e) => updateTracking(person.rank, 'convidarAmigo', e.target.value)}
+                          >
+                            <option value="">Selecione...</option>
+                            <option value="Sim ela aceitou e vai levar alguém">Sim, vai levar alguém!</option>
+                            <option value="Não consegue">Não conseguiu / vai sozinho(a)</option>
+                          </select>
+                        </div>
+
+                        {/* Ajuda ida */}
+                        <div className="field-group">
+                          <label className="field-label">Precisa de ajuda com o trajeto?</label>
+                          <select 
+                            className="field-select" 
+                            value={person.tracking.ajudaIda} 
+                            onChange={(e) => updateTracking(person.rank, 'ajudaIda', e.target.value)}
+                          >
+                            <option value="">Selecione...</option>
+                            <option value="Ela falou q é tranquilo e chega">Tranquilo, ele(a) chega!</option>
+                            <option value="Sim">Sim, me coloquei para ajudar</option>
+                            <option value="e resposta nao respondeu, nao ligou">Não respondeu / Não ligou</option>
+                          </select>
+                        </div>
+
+                        {/* Aceitou ir pro grupo de oração */}
+                        <div className="field-group">
+                          <label className="field-label">Aceitou o convite para o Grupo de Oração?</label>
+                          <select 
+                            className="field-select" 
+                            value={person.tracking.grupoDeOracao} 
+                            onChange={(e) => updateTracking(person.rank, 'grupoDeOracao', e.target.value)}
+                          >
+                            <option value="">Selecione...</option>
+                            <option value="Sim">Sim!</option>
+                            <option value="Ainda vai pensar">Ainda vai pensar</option>
+                            <option value="Não">Não</option>
+                          </select>
+                        </div>
+
+                        {/* Nivel de Interesse */}
+                        <div className="field-group" style={{marginTop: '0.5rem', marginBottom: '0.5rem'}}>
+                          <label className="field-label" style={{color: '#D4AF37'}}>Gráfico de Interesse do Jovem 🔥</label>
+                          <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)'}}>
+                            <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 'bold'}}>
+                               <span style={{color: '#ff4444'}}>1★ Frio</span>
+                               <span style={{color: '#D4AF37'}}>3★ Pensando</span>
+                               <span style={{color: '#00c864'}}>5★ Fervendo!</span>
+                            </div>
+                            <div className="card-track" style={{height: '10px', marginTop: '0.2rem', marginBottom: '0.5rem'}}>
+                               <div className="card-fill" style={{
+                                 width: `${(person.tracking.interesse || 0) * 20}%`, 
+                                 background: person.tracking.interesse <= 2 ? '#ff4444' : person.tracking.interesse === 3 ? '#D4AF37' : '#00c864',
+                                 boxShadow: '0 0 8px currentColor'
+                               }}></div>
+                            </div>
+                            <div className="interest-rating" style={{justifyContent: 'space-between'}}>
+                              {[1, 2, 3, 4, 5].map(star => (
+                                <button 
+                                  key={star}
+                                  className={`star-btn ${person.tracking.interesse >= star ? 'active' : ''}`}
+                                  onClick={() => updateTracking(person.rank, 'interesse', star)}
+                                >
+                                  ★
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
                       </div>
                     </div>
-
-                  </div>
+                  )}
                 </div>
               );
             })}
