@@ -130,6 +130,46 @@ export default function TrackingView() {
     return Math.round((completed / totalFields) * 100);
   };
 
+  const getAnalytics = (tracking) => {
+    let int = 0;
+    let des = 0;
+    
+    // Evaluate qualitative fields
+    const fields = [
+      tracking.aceitouConviteVigilia, tracking.conversouBem, tracking.segundaAbordagemVigilia,
+      tracking.convidarAmigo, tracking.ajudaIda, tracking.foiNaVigilia,
+      tracking.aceitouGO, tracking.segundaAbordagemGO, tracking.foiNoGO
+    ];
+
+    fields.forEach(val => {
+      if (!val) return;
+      const v = val.toLowerCase();
+      
+      // Interest triggers
+      if (v.includes('sim') || v.includes('interessada') || v.includes('tranquilo') || v.includes('falei animado') || v.includes('muito')) {
+        int += 2;
+      } 
+      // Resistance triggers
+      else if (v.includes('não respondeu') || v.includes('fechado') || v.includes('frio') || v.includes('vácuo') || v.includes('não foi') || v.includes('não apareceu') || v.includes('recusou')) {
+        des += 2;
+      }
+      // Neutral / Mild Resistance
+      else if (v.includes('não deu tempo') || v.includes('esqueci') || v.includes('não consegue')) {
+        des += 1;
+      }
+      else {
+        // "Ainda vai pensar", "Não pode agora mas quer"
+        int += 1; 
+      }
+    });
+
+    const totalScore = int + des;
+    const intPct = totalScore > 0 ? Math.round((int / totalScore) * 100) : 50;
+    const desPct = totalScore > 0 ? Math.round((des / totalScore) * 100) : 50;
+
+    return { int, des, intPct, desPct };
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="auth-container">
@@ -344,23 +384,60 @@ export default function TrackingView() {
                 </div>
 
                 <div className="ficha-body">
-                   {/* Equipe / Acompanhador */}
-                   <div className="ficha-panel glow-panel" style={{borderColor: person.tracking.acompanhador ? '#D4AF37' : 'rgba(255,255,255,0.1)'}}>
-                      <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem'}}>
-                         <UserCircle size={20} color="#D4AF37" />
-                         <span style={{fontWeight: '700', color: '#fff', fontSize: '0.9rem', textTransform: 'uppercase'}}>Quem está acompanhando?</span>
-                      </div>
-                      <div className="team-selector">
-                        {team.map(member => (
-                          <button 
-                            key={member}
-                            className={`team-btn ${person.tracking.acompanhador === member ? 'active' : ''}`}
-                            onClick={() => updateTracking(person.rank, 'acompanhador', person.tracking.acompanhador === member ? '' : member)}
-                          >
-                            {member}
-                          </button>
-                        ))}
-                      </div>
+                   {/* Equipes e Analytics (Dashboards) */}
+                   <div style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+                     
+                     <div className="ficha-panel glow-panel" style={{borderColor: person.tracking.acompanhador ? '#D4AF37' : 'rgba(255,255,255,0.1)'}}>
+                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem'}}>
+                           <UserCircle size={20} color="#D4AF37" />
+                           <span style={{fontWeight: '700', color: '#fff', fontSize: '0.9rem', textTransform: 'uppercase'}}>Quem está acompanhando?</span>
+                        </div>
+                        <div className="team-selector">
+                          {team.map(member => (
+                            <button 
+                              key={member}
+                              className={`team-btn ${person.tracking.acompanhador === member ? 'active' : ''}`}
+                              onClick={() => updateTracking(person.rank, 'acompanhador', person.tracking.acompanhador === member ? '' : member)}
+                            >
+                              {member}
+                            </button>
+                          ))}
+                        </div>
+                     </div>
+
+                     {/* Analytics do Engajamento */}
+                     {(() => {
+                       const analytics = getAnalytics(person.tracking);
+                       return (
+                         <div className="ficha-panel" style={{background: 'linear-gradient(145deg, rgba(18,18,20,0.9), rgba(5,5,5,0.9))'}}>
+                           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+                              <span style={{fontWeight: '700', color: '#fff', fontSize: '0.9rem', textTransform: 'uppercase'}}>Radar de Engajamento</span>
+                              <span style={{fontSize: '0.75rem', background: 'rgba(255,255,255,0.1)', padding: '0.2rem 0.6rem', borderRadius: '10px'}}>Baseado nas respostas</span>
+                           </div>
+                           
+                           {/* Tug of war bar */}
+                           <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 'bold', marginBottom: '0.4rem'}}>
+                             <span style={{color: '#00c864'}}>Sinais de Interesse ({analytics.intPct}%)</span>
+                             <span style={{color: '#ff4444'}}>Sinais de Desinteresse ({analytics.desPct}%)</span>
+                           </div>
+                           <div className="analytics-tug-of-war">
+                             <div className="tug-interest" style={{width: `${analytics.intPct}%`}}></div>
+                             <div className="tug-resistance" style={{width: `${analytics.desPct}%`}}></div>
+                           </div>
+
+                           <div style={{marginTop: '1.2rem', textAlign: 'center'}}>
+                             {analytics.intPct >= 70 ? (
+                               <div className="status-pill green">💎 Lead Quente! Excelentes chances de conversão.</div>
+                             ) : analytics.intPct <= 30 && analytics.desPct > 50 ? (
+                               <div className="status-pill red">⚠️ Frio. Requer quebra de gelo ou oração profunda.</div>
+                             ) : (
+                               <div className="status-pill gold">⚖️ Em cima do muro. Precisa da sua atenção.</div>
+                             )}
+                           </div>
+                         </div>
+                       );
+                     })()}
+
                    </div>
 
                    {/* Formulário Completo */}

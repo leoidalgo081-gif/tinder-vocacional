@@ -601,3 +601,51 @@
   color: #D4AF37;
   box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
 }
+
+/* Analytics Graph Styles */
+.analytics-tug-of-war {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  display: flex;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.tug-interest {
+  background: linear-gradient(90deg, #00c864, #1ed760);
+  transition: width 0.5s ease-in-out;
+}
+
+.tug-resistance {
+  background: linear-gradient(90deg, #ff4444, #ff0000);
+  transition: width 0.5s ease-in-out;
+  margin-left: auto; /* Push to the right side if there's empty space in the middle, but total should be 100% */
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.status-pill.green {
+  background: rgba(0, 200, 100, 0.1);
+  color: #00c864;
+  border-color: rgba(0, 200, 100, 0.3);
+}
+
+.status-pill.red {
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  border-color: rgba(255, 68, 68, 0.3);
+}
+
+.status-pill.gold {
+  background: rgba(212, 175, 55, 0.1);
+  color: #D4AF37;
+  border-color: rgba(212, 175, 55, 0.3);
+}
