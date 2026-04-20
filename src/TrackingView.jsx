@@ -56,16 +56,17 @@ export default function TrackingView() {
   };
 
   const getDefaultTracking = () => ({
-    aceitouConvite: '',
+    aceitouConviteVigilia: '',
     conversouBem: '',
-    quando: '',
-    aceitouVigilia: '',
-    segundaAbordagem: '',
+    rezei: '',
+    segundaAbordagemVigilia: '',
     convidarAmigo: '',
     ajudaIda: '',
-    grupoDeOracao: '',
+    foiNaVigilia: '',
+    aceitouGO: '',
+    segundaAbordagemGO: '',
+    foiNoGO: '',
     interesse: 0, // 0 to 5
-    rezei: '',
     acompanhador: ''
   });
 
@@ -112,18 +113,19 @@ export default function TrackingView() {
 
   const calculateProgress = (tracking) => {
     let completed = 0;
-    const totalFields = 10; // Excluding date and interest
+    const totalFields = 11; // Total Boolean/Select fields
     
-    if (tracking.aceitouConvite) completed++;
+    if (tracking.aceitouConviteVigilia) completed++;
     if (tracking.conversouBem) completed++;
-    if (tracking.aceitouVigilia) completed++;
-    if (tracking.segundaAbordagem) completed++;
+    if (tracking.rezei) completed++;
+    if (tracking.segundaAbordagemVigilia) completed++;
     if (tracking.convidarAmigo) completed++;
     if (tracking.ajudaIda) completed++;
-    if (tracking.grupoDeOracao) completed++;
-    if (tracking.rezei) completed++;
+    if (tracking.foiNaVigilia) completed++;
+    if (tracking.aceitouGO) completed++;
+    if (tracking.segundaAbordagemGO) completed++;
+    if (tracking.foiNoGO) completed++;
     if (tracking.acompanhador) completed++;
-    if (tracking.interesse > 0) completed++;
 
     return Math.round((completed / totalFields) * 100);
   };
@@ -363,40 +365,53 @@ export default function TrackingView() {
 
                    {/* Formulário Completo */}
                    <div className="user-fields">
-                        {/* Primeiro Contato */}
+                        {/* 1. O Match (Stand) */}
                         <div className="field-group">
-                          <label className="field-label" style={{color: '#D4AF37', borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '0.3rem'}}>1. O Match (Stand)</label>
-                          <label className="field-label" style={{marginTop: '0.4rem'}}>Aceitou o convite / Abertura?</label>
+                          <label className="field-label" style={{color: '#D4AF37', borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '0.3rem', fontSize: '1rem'}}>
+                            Fase 1: O Primeiro Contato
+                          </label>
+                          <label className="field-label" style={{marginTop: '0.8rem'}}>1. Aceitou o Convite de Abertura (Vigília)?</label>
+                          <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                            Responder se recebeu bem o primeiro convite ou se não respondeu.
+                          </span>
                           <select 
                             className="field-select" 
-                            value={person.tracking.aceitouConvite} 
-                            onChange={(e) => updateTracking(person.rank, 'aceitouConvite', e.target.value)}
+                            value={person.tracking.aceitouConviteVigilia || person.tracking.aceitouConvite} 
+                            onChange={(e) => updateTracking(person.rank, 'aceitouConviteVigilia', e.target.value)}
                           >
                             <option value="">Selecione...</option>
                             <option value="Sim aceitou">Sim, aceitou muito bem!</option>
-                            <option value="Não pode agora mas quer conhecer">Curtiu, mas não pode agora</option>
-                            <option value="Não respondeu">Fechado / Não</option>
+                            <option value="Não pode agora mas quer conhecer">Curtiu, mas não pode agora/depois</option>
+                            <option value="Não respondeu">Não respondeu / Fechado</option>
                           </select>
                         </div>
 
                         <div className="field-group">
-                          <label className="field-label">Conversei sinceramente com ele(a)?</label>
+                          <label className="field-label">2. Conversei sinceramente com ele(a)?</label>
+                          <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                            Perguntas de interesse verdadeiro, teste. Perguntei como está, onde estudava, como foi sua experiência com Deus, se já teve.
+                          </span>
                           <select 
                             className="field-select" 
                             value={person.tracking.conversouBem} 
                             onChange={(e) => updateTracking(person.rank, 'conversouBem', e.target.value)}
                           >
                             <option value="">Selecione...</option>
-                            <option value="Sim">Sim, foi profundo</option>
+                            <option value="Sim">Sim, fluiu e foi profundo</option>
                             <option value="Não">Não deu tempo/profundidade</option>
-                            <option value="Não respondeu mt">Ele(a) não abriu muito</option>
+                            <option value="Não respondeu mt">Ele(a) não quis abrir muito</option>
                           </select>
                         </div>
 
                         {/* Espiritual */}
                         <div className="field-group" style={{marginTop: '0.5rem'}}>
-                          <label className="field-label" style={{color: '#90caf9', borderBottom: '1px solid rgba(144,202,249,0.2)', paddingBottom: '0.3rem'}}>2. Espiritual</label>
-                          <label className="field-label" style={{marginTop: '0.4rem'}}>Rezei por ele(a) hoje? 🙏</label>
+                          <label className="field-label" style={{color: '#90caf9', borderBottom: '1px solid rgba(144,202,249,0.2)', paddingBottom: '0.3rem', fontSize: '1rem'}}>
+                            Fase 2: Batalha Espiritual
+                          </label>
+                          <label className="field-label" style={{marginTop: '0.8rem'}}>3. Rezar uma Ave Maria por dia durante a semana por ele(a)? 🙏</label>
+                          <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                            Você está rezando por essa pessoa antes do evento acontecer?
+                          </span>
                           <select 
                             className="field-select" 
                             value={person.tracking.rezei} 
@@ -404,100 +419,142 @@ export default function TrackingView() {
                             style={{borderColor: person.tracking.rezei === 'Sim' ? '#90caf9' : 'rgba(255,255,255,0.1)'}}
                           >
                             <option value="">Selecione...</option>
-                            <option value="Sim">Sim, eu o(a) entreguei a Deus!</option>
+                            <option value="Sim">Sim, estou rezando diariamente!</option>
                             <option value="Ainda não">Ainda não...</option>
                           </select>
                         </div>
 
-                        {/* Quando */}
-                        <div className="field-group">
-                          <label className="field-label">Marcou para quando?</label>
-                          <input 
-                            type="date" 
-                            className="field-date" 
-                            value={person.tracking.quando} 
-                            onChange={(e) => updateTracking(person.rank, 'quando', e.target.value)}
-                          />
-                        </div>
+                         {/* Ações Pré-Vigília */}
+                         <div className="field-group" style={{marginTop: '0.5rem'}}>
+                           <label className="field-label" style={{color: '#ff3c00', borderBottom: '1px solid rgba(255,60,0,0.2)', paddingBottom: '0.3rem', fontSize: '1rem'}}>
+                             Fase 3: O Evento (A Vigília)
+                           </label>
+                           
+                           <label className="field-label" style={{marginTop: '0.8rem'}}>4. 2ª Abordagem na Semana (Pré-Vigília)?</label>
+                           <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                             Ao conversar durante a semana e no dia do evento, ele(a) parece animado(a) para ir? Explique como foi a abordagem.
+                           </span>
+                           <select 
+                             className="field-select" 
+                             value={person.tracking.segundaAbordagemVigilia || person.tracking.segundaAbordagem} 
+                             onChange={(e) => updateTracking(person.rank, 'segundaAbordagemVigilia', e.target.value)}
+                           >
+                             <option value="">Selecione...</option>
+                             <option value="Sim eu falei com ela">Sim, falei e parece animado(a)</option>
+                             <option value="Ela vai interessada">Ele(a) mesmo veio procurar animado(a)</option>
+                             <option value="Contato frio">Falei, mas achei desanimado(a)</option>
+                             <option value="Não falei ainda">Ainda não abordei a 2ª vez</option>
+                           </select>
+                         </div>
 
-                        {/* Vigília */}
-                        <div className="field-group" style={{marginTop: '0.5rem'}}>
-                          <label className="field-label" style={{color: '#ff3c00', borderBottom: '1px solid rgba(255,60,0,0.2)', paddingBottom: '0.3rem'}}>3. O Evento (Vigília)</label>
-                          <label className="field-label" style={{marginTop: '0.4rem'}}>Aceitou ir para a Vigília?</label>
-                          <select 
-                            className="field-select" 
-                            value={person.tracking.aceitouVigilia} 
-                            onChange={(e) => updateTracking(person.rank, 'aceitouVigilia', e.target.value)}
-                          >
-                            <option value="">Selecione...</option>
-                            <option value="Sim aceitou">Sim, aceitou!</option>
-                            <option value="Não pode agora mas quer conhecer">Não pode agora, mas quer conhecer</option>
-                            <option value="Recusou">Recusou</option>
-                          </select>
-                        </div>
+                         <div className="field-group">
+                           <label className="field-label">5. Convidou para levar um amigo(a) com ele(a)?</label>
+                           <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                             Incentivou trazer mais alguém para a vigília?
+                           </span>
+                           <select 
+                             className="field-select" 
+                             value={person.tracking.convidarAmigo} 
+                             onChange={(e) => updateTracking(person.rank, 'convidarAmigo', e.target.value)}
+                           >
+                             <option value="">Selecione...</option>
+                             <option value="Sim ela aceitou e vai levar alguém">Sim, vai levar alguém!</option>
+                             <option value="Convidei mas vai só">Convidei, mas respondeu que vai só</option>
+                             <option value="Ainda não convidei">Esqueci/Não falei sobre isso</option>
+                           </select>
+                         </div>
 
-                        {/* 2a Abordagem */}
-                        <div className="field-group">
-                          <label className="field-label">2ª Abordagem na Semana?</label>
-                          <select 
-                            className="field-select" 
-                            value={person.tracking.segundaAbordagem} 
-                            onChange={(e) => updateTracking(person.rank, 'segundaAbordagem', e.target.value)}
-                          >
-                            <option value="">Selecione...</option>
-                            <option value="Sim eu falei com ela">Sim, eu falei</option>
-                            <option value="Ela vai interessada">Ela que veio interessada</option>
-                            <option value="Não falei ainda">Ainda não mandei</option>
-                          </select>
-                        </div>
+                         <div className="field-group">
+                           <label className="field-label">6. Precisa de ajuda para o trajeto?</label>
+                           <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                             Como ele vai chegar na Vigília? Alinhou carona, ônibus ou localização?
+                           </span>
+                           <select 
+                             className="field-select" 
+                             value={person.tracking.ajudaIda} 
+                             onChange={(e) => updateTracking(person.rank, 'ajudaIda', e.target.value)}
+                           >
+                             <option value="">Selecione...</option>
+                             <option value="Tranquilo">Não precisa, falou que chega tranquilo</option>
+                             <option value="Sim">Sim, eu ajudei com o transporte</option>
+                             <option value="Nao respondeu">Ele(a) nem me respondeu pra eu ajudar</option>
+                           </select>
+                         </div>
 
-                        {/* Convidar amigo */}
-                        <div className="field-group">
-                          <label className="field-label">Pedi pra levar um amigo(a)?</label>
-                          <select 
-                            className="field-select" 
-                            value={person.tracking.convidarAmigo} 
-                            onChange={(e) => updateTracking(person.rank, 'convidarAmigo', e.target.value)}
-                          >
-                            <option value="">Selecione...</option>
-                            <option value="Sim ela aceitou e vai levar alguém">Sim, vai levar alguém!</option>
-                            <option value="Não consegue">Não conseguiu / vai sozinho(a)</option>
-                          </select>
-                        </div>
+                         <div className="field-group" style={{padding: '0.8rem', background: 'rgba(255, 60, 0, 0.1)', borderRadius: '8px', border: '1px solid rgba(255, 60, 0, 0.3)', marginTop: '0.5rem'}}>
+                           <label className="field-label">7. FOI NA VIGÍLIA?</label>
+                           <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                             Confirmação oficial de presença no evento.
+                           </span>
+                           <select 
+                             className="field-select" 
+                             value={person.tracking.foiNaVigilia} 
+                             onChange={(e) => updateTracking(person.rank, 'foiNaVigilia', e.target.value)}
+                           >
+                             <option value="">Selecione (Aguardando evento...)</option>
+                             <option value="Sim">Sim!!! Estava lá!</option>
+                             <option value="Não">Não foi :(</option>
+                           </select>
+                         </div>
 
-                        {/* Ajuda ida */}
-                        <div className="field-group">
-                          <label className="field-label">Precisa de ajuda com o trajeto?</label>
-                          <select 
-                            className="field-select" 
-                            value={person.tracking.ajudaIda} 
-                            onChange={(e) => updateTracking(person.rank, 'ajudaIda', e.target.value)}
-                          >
-                            <option value="">Selecione...</option>
-                            <option value="Ela falou q é tranquilo e chega">Tranquilo, ele(a) chega!</option>
-                            <option value="Sim">Sim, me coloquei para ajudar</option>
-                            <option value="e resposta nao respondeu, nao ligou">Não respondeu / Não ligou</option>
-                          </select>
-                        </div>
+                         {/* Fase 4: Pós Vigília (GO) */}
+                         <div className="field-group" style={{marginTop: '0.5rem'}}>
+                           <label className="field-label" style={{color: '#00c864', borderBottom: '1px solid rgba(0, 200, 100, 0.2)', paddingBottom: '0.3rem', fontSize: '1rem'}}>
+                             Fase 4: Pós-Vigília (Grupo de Oração)
+                           </label>
+                           
+                           <label className="field-label" style={{marginTop: '0.8rem'}}>8. Aceitou o convite para ir no Grupo de Oração?</label>
+                           <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                             Após a Vigília (ou caso tenha faltado, mas se manteve animado), você o chamou para o G.O.?
+                           </span>
+                           <select 
+                             className="field-select" 
+                             value={person.tracking.aceitouGO || person.tracking.grupoDeOracao} 
+                             onChange={(e) => updateTracking(person.rank, 'aceitouGO', e.target.value)}
+                           >
+                             <option value="">Selecione...</option>
+                             <option value="Sim">Sim, quer muito ir!</option>
+                             <option value="Ainda vai pensar">Ainda vai analisar os dias/horários</option>
+                             <option value="Não">Não, se fechou ou recusou</option>
+                           </select>
+                         </div>
 
-                        {/* Aceitou ir pro grupo de oração */}
-                        <div className="field-group">
-                          <label className="field-label">Aceitou o convite para o Grupo de Oração?</label>
-                          <select 
-                            className="field-select" 
-                            value={person.tracking.grupoDeOracao} 
-                            onChange={(e) => updateTracking(person.rank, 'grupoDeOracao', e.target.value)}
-                          >
-                            <option value="">Selecione...</option>
-                            <option value="Sim">Sim!</option>
-                            <option value="Ainda vai pensar">Ainda vai pensar</option>
-                            <option value="Não">Não</option>
-                          </select>
-                        </div>
+                         <div className="field-group">
+                           <label className="field-label">9. 2ª Abordagem na Semana (Pré-G.O.)?</label>
+                           <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                             Você continuou puxando assunto ou animando ao longo da semana do Grupo?
+                           </span>
+                           <select 
+                             className="field-select" 
+                             value={person.tracking.segundaAbordagemGO} 
+                             onChange={(e) => updateTracking(person.rank, 'segundaAbordagemGO', e.target.value)}
+                           >
+                             <option value="">Selecione...</option>
+                             <option value="Falei animado">Falei e está super na expectativa</option>
+                             <option value="Sem resposta">Falei, mas me deu vácuo/frio</option>
+                             <option value="Nao falei">Ainda não mandei essa mensagem</option>
+                           </select>
+                         </div>
 
-                        {/* Nivel de Interesse */}
+                         <div className="field-group" style={{padding: '0.8rem', background: 'rgba(0, 200, 100, 0.1)', borderRadius: '8px', border: '1px solid rgba(0, 200, 100, 0.3)', marginTop: '0.5rem', marginBottom: '1rem'}}>
+                           <label className="field-label">10. FOI NO GRUPO DE ORAÇÃO?</label>
+                           <span style={{fontSize: '0.75rem', color: '#b4b4b4', marginBottom: '0.3rem'}}>
+                             Último passo e engajamento da pessoa na Obra local.
+                           </span>
+                           <select 
+                             className="field-select" 
+                             value={person.tracking.foiNoGO} 
+                             onChange={(e) => updateTracking(person.rank, 'foiNoGO', e.target.value)}
+                           >
+                             <option value="">Selecione (Aguardando G.O...)</option>
+                             <option value="Sim">Sim!!! Engajou!</option>
+                             <option value="Não">Não apareceu :(</option>
+                           </select>
+                         </div>
+
+                        {/* Gráfico de Interesse do Jovem 🔥 */}
                         <div className="field-group" style={{marginTop: '0.5rem', marginBottom: '0.5rem'}}>
-                          <label className="field-label" style={{color: '#D4AF37'}}>Gráfico de Interesse do Jovem 🔥</label>
+                          <label className="field-label" style={{color: '#D4AF37', fontSize: '1.2rem', textAlign: 'center'}}>GRÁFICO FINAL DO JOVEM</label>
                           <div style={{display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'rgba(0,0,0,0.2)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)'}}>
                             <div style={{display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 'bold'}}>
                                <span style={{color: '#ff4444'}}>1★ Frio</span>
