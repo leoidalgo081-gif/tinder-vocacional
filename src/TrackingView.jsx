@@ -4,7 +4,7 @@ import './TrackingView.css';
 
 // The provided participant list
 const INITIAL_BODIES = [
-  { rank: 1, name: "Ana", age: 18, score: 13999, phone: "5511958604709", link: "https://wa.me/5511958604709?text=%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%20Ana%2C%20isso%20%C3%A9%20INCR%C3%8DVEL%21%20%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%0A%0AVoc%C3%AA%20conseguiu%20ficar%20em%20%2A%2A%F0%9F%A5%87%20PRIMEIRO%20LUGAR%2A%2A%20no%20nosso%20matching%21%20%F0%9F%98%B1%E2%9C%A8%0ASua%20pontua%C3%A7%C3%A3o%20foi%2013999%20%E2%80%94%20algo%20realmente%20impressionante%21%20%F0%9F%92%A5%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20teremos%20uma%20%2A%2Avig%C3%ADlia%20jovem%2A%2A%20muito%20especial.%0AQuer%20vir%20conhecer%20mais%20do%20nosso%20carisma%3F%20Seria%20maravilhoso%20ter%20voc%C3%AA%20com%20a%20gente%20%F0%9F%92%99%F0%9F%99%8F" },
+  { rank: 2, name: "Ana", age: 18, score: 13999, phone: "5511958604709", link: "https://wa.me/5511958604709?text=%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%20Ana%2C%20isso%20%C3%A9%20INCR%C3%8DVEL%21%20%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%0A%0AVoc%C3%AA%20conseguiu%20ficar%20em%20%2A%2A%F0%9F%A5%87%20PRIMEIRO%20LUGAR%2A%2A%20no%20nosso%20matching%21%20%F0%9F%98%B1%E2%9C%A8%0ASua%20pontua%C3%A7%C3%A3o%20foi%2013999%20%E2%80%94%20algo%20realmente%20impressionante%21%20%F0%9F%92%A5%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20teremos%20uma%20%2A%2Avig%C3%ADlia%20jovem%2A%2A%20muito%20especial.%0AQuer%20vir%20conhecer%20mais%20do%20nosso%20carisma%3F%20Seria%20maravilhoso%20ter%20voc%C3%AA%20com%20a%20gente%20%F0%9F%92%99%F0%9F%99%8F" },
   { rank: 5, name: "Anna", age: 20, score: 13780, phone: "5511982015181", link: "https://wa.me/5511982015181?text=Oi%20Anna%21%20Que%20bom%20te%20reencontrar%21%20%F0%9F%99%8C%0A%0AA%20gente%20se%20conheceu%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0AVoc%C3%AA%20ficou%20entre%20os%20%2A%2ATOP%2010%2A%2A%20do%20nosso%20matching%20com%2013780%20pontos%20%F0%9F%98%8D%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem%20feita%20com%20muito%20carinho%20%F0%9F%92%99%0AQue%20tal%20conhecer%20um%20pouco%20mais%20do%20nosso%20carisma%3F" },
   { rank: 6, name: "Yasmim", age: 17, score: 13732, phone: "5511970160048", link: "https://wa.me/5511970160048?text=Oi%20Yasmim%21%20Que%20bom%20te%20reencontrar%21%20%F0%9F%99%8C%0A%0AA%20gente%20se%20conheceu%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0AVoc%C3%AA%20ficou%20entre%20os%20%2A%2ATOP%2010%2A%2A%20do%20nosso%20matching%20com%2013732%20pontos%20%F0%9F%98%8D%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem%20feita%20com%20muito%20carinho%20%F0%9F%92%99%0AQue%20tal%20conhecer%20um%20pouco%20mais%20do%20nosso%20carisma%3F" },
   { rank: 7, name: "Giovanna", age: 21, score: 13443, phone: "5511994819426", link: "https://wa.me/5511994819426?text=Oi%20Giovanna%21%20Que%20alegria%20falar%20com%20voc%C3%AA%20%F0%9F%98%8A%0A%0AA%20gente%20se%20conheceu%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0ASeu%20resultado%20foi%20incr%C3%ADvel%3A%2013443%20pontos%20no%20matching%20%F0%9F%91%80%E2%9C%A8%0A%0ANeste%20s%C3%A1bado%20teremos%20uma%20vig%C3%ADlia%20jovem%20super%20especial%20%E2%9C%A8%0AFica%20o%20convite%20pra%20vir%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%98%8A" },
@@ -76,7 +76,7 @@ export default function TrackingView() {
       const parsed = JSON.parse(saved);
       const merged = INITIAL_BODIES.map(p => {
         const existing = parsed.find(e => e.rank === p.rank);
-        return existing ? { ...p, ...existing } : { ...p, tracking: getDefaultTracking() };
+        return existing ? { ...p, tracking: { ...getDefaultTracking(), ...existing.tracking } } : { ...p, tracking: getDefaultTracking() };
       });
       setData(merged);
     } else {
@@ -298,13 +298,13 @@ export default function TrackingView() {
 
         {view === 'list' && (
           <div className="user-list">
-            {data.map(person => {
+            {data.map((person, index) => {
               const progress = calculateProgress(person.tracking);
               return (
                 <div key={person.rank} className="user-card compact-card" onClick={() => { setSelectedRank(person.rank); setView('ficha'); }}>
                   <div className="user-header">
                     <div className="user-info">
-                       <span className="user-rank">Posição #{person.rank}</span>
+                       <span className="user-rank">Posição #{index + 1}</span>
                        <h3 className="user-name">{person.name} <span style={{fontSize: '0.8rem', color: '#b4b4b4', fontWeight: '400'}}>({person.age} anos)</span></h3>
                        <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem'}}>
                          {person.tracking.acompanhador ? (
@@ -371,7 +371,7 @@ export default function TrackingView() {
                       </svg>
                    </div>
                    <div className="ficha-header-info">
-                      <span className="user-rank" style={{fontSize: '0.9rem'}}>#{person.rank} Match</span>
+                      <span className="user-rank" style={{fontSize: '0.9rem'}}>#{data.findIndex(d => d.rank === person.rank) + 1} Match</span>
                       <h2 style={{margin: '0.2rem 0', fontFamily: 'Playfair Display', fontSize: '2rem', color: '#D4AF37'}}>{person.name}</h2>
                       <p style={{color: '#b4b4b4', fontSize: '0.85rem', margin: 0}}>{person.age} anos • {person.score} pontos</p>
 
