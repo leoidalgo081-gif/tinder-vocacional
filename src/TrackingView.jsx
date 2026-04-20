@@ -256,8 +256,8 @@ export default function TrackingView() {
                        <h3 className="user-name">{person.name} <span style={{fontSize: '0.8rem', color: '#b4b4b4', fontWeight: '400'}}>({person.age} anos)</span></h3>
                        <p className="user-points">{person.score} pontos</p>
                     </div>
-                    <a href={person.link} target="_blank" rel="noreferrer" className="wa-btn">
-                      <Phone size={16} fill="currentColor" /> Chamar
+                    <a href={person.link.replace('https://wa.me/', 'https://api.whatsapp.com/send/?phone=').replace('?text=', '&text=')} target="_blank" rel="noreferrer" className="wa-btn">
+                      <MessageSquare size={16} fill="currentColor" /> WhatsApp
                     </a>
                   </div>
 
