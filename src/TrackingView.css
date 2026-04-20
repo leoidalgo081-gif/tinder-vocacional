@@ -360,3 +360,68 @@
 .star-btn.active {
   color: #D4AF37;
 }
+
+/* Interest Distribution Vertical Chart */
+.interest-bars {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 120px;
+  margin-top: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.interest-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  height: 100%;
+}
+
+.interest-v-value {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.interest-v-track {
+  width: 20px;
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.interest-v-fill {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 0 10px inset rgba(0,0,0,0.5);
+}
+
+.interest-v-label {
+  font-size: 0.75rem;
+  color: #b4b4b4;
+  font-weight: 700;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from { width: 0; }
+}
+
+@keyframes slideUp {
+  from { height: 0; }
+}
+
+.slide-in {
+  animation: slideIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.slide-up {
+  animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

@@ -53,7 +53,8 @@ export default function TrackingView() {
     convidarAmigo: '',
     ajudaIda: '',
     grupoDeOracao: '',
-    interesse: 0 // 0 to 5
+    interesse: 0, // 0 to 5
+    rezei: ''
   });
 
   // Load from local storage or set initial
@@ -99,7 +100,7 @@ export default function TrackingView() {
 
   const calculateProgress = (tracking) => {
     let completed = 0;
-    const totalFields = 8; // Excluding date and interest
+    const totalFields = 9; // Excluding date and interest
     
     if (tracking.aceitouConvite) completed++;
     if (tracking.conversouBem) completed++;
@@ -108,6 +109,7 @@ export default function TrackingView() {
     if (tracking.convidarAmigo) completed++;
     if (tracking.ajudaIda) completed++;
     if (tracking.grupoDeOracao) completed++;
+    if (tracking.rezei) completed++;
     if (tracking.interesse > 0) completed++;
 
     return Math.round((completed / totalFields) * 100);
@@ -145,6 +147,16 @@ export default function TrackingView() {
   const confirmadosVigilia = data.filter(d => d.tracking.aceitouVigilia === 'Sim aceitou').length;
   const muitoInteressados = data.filter(d => d.tracking.interesse >= 4).length;
   const praOração = data.filter(d => d.tracking.grupoDeOracao === 'Sim').length;
+  const galeraRezada = data.filter(d => d.tracking.rezei === 'Sim').length;
+
+  const interestDist = {
+    5: data.filter(d => d.tracking.interesse === 5).length,
+    4: data.filter(d => d.tracking.interesse === 4).length,
+    3: data.filter(d => d.tracking.interesse === 3).length,
+    2: data.filter(d => d.tracking.interesse === 2).length,
+    1: data.filter(d => d.tracking.interesse === 1).length,
+    0: data.filter(d => d.tracking.interesse === 0).length,
+  };
 
   return (
     <div className="tracking-app-container">
@@ -169,17 +181,17 @@ export default function TrackingView() {
               <span className="stat-value">{conversados}/{total}</span>
               <span className="stat-label">Conversei Sinc.</span>
             </div>
-            <div className="stat-card">
+            <div className="stat-card" style={{border: '1px solid rgba(255, 60, 0, 0.3)', background: 'radial-gradient(circle, rgba(255,60,0,0.1) 0%, transparent 80%)' }}>
               <span className="stat-value" style={{color: '#ff3c00'}}>{confirmadosVigilia}</span>
               <span className="stat-label">Vão na Vigília</span>
             </div>
-            <div className="stat-card">
+            <div className="stat-card" style={{border: '1px solid rgba(0, 200, 100, 0.3)', background: 'radial-gradient(circle, rgba(0,200,100,0.1) 0%, transparent 80%)' }}>
               <span className="stat-value" style={{color: '#00c864'}}>{muitoInteressados}</span>
               <span className="stat-label">Alto Interesse (+4★)</span>
             </div>
             <div className="stat-card">
-              <span className="stat-value">{praOração}</span>
-              <span className="stat-label">Pro Grupo Oração</span>
+              <span className="stat-value" style={{color: '#D4AF37'}}>{galeraRezada}</span>
+              <span className="stat-label">Rezei por Eles</span>
             </div>
 
             <div className="interest-chart">
@@ -188,7 +200,7 @@ export default function TrackingView() {
               <div className="chart-bar-row">
                 <div className="chart-bar-label"><MessageSquare size={14}/> Abordados</div>
                 <div className="chart-bar-track">
-                  <div className="chart-bar-fill" style={{width: `${(conversados/total)*100}%`, background: '#2196F3'}}></div>
+                  <div className="chart-bar-fill slide-in" style={{width: `${(conversados/total)*100}%`, background: '#2196F3'}}></div>
                 </div>
                 <div className="chart-bar-value">{Math.round((conversados/total)*100 || 0)}%</div>
               </div>
@@ -196,7 +208,7 @@ export default function TrackingView() {
               <div className="chart-bar-row">
                 <div className="chart-bar-label"><CheckCircle2 size={14}/> Vigília</div>
                 <div className="chart-bar-track">
-                   <div className="chart-bar-fill" style={{width: `${(confirmadosVigilia/total)*100}%`, background: '#ff3c00'}}></div>
+                   <div className="chart-bar-fill slide-in" style={{width: `${(confirmadosVigilia/total)*100}%`, background: '#ff3c00', boxShadow: '0 0 10px rgba(255,60,0,0.5)'}}></div>
                 </div>
                 <div className="chart-bar-value">{Math.round((confirmadosVigilia/total)*100 || 0)}%</div>
               </div>
@@ -204,9 +216,28 @@ export default function TrackingView() {
               <div className="chart-bar-row">
                 <div className="chart-bar-label"><PlusCircle size={14}/> G.O.</div>
                 <div className="chart-bar-track">
-                   <div className="chart-bar-fill" style={{width: `${(praOração/total)*100}%`, background: '#00c864'}}></div>
+                   <div className="chart-bar-fill slide-in" style={{width: `${(praOração/total)*100}%`, background: '#00c864'}}></div>
                 </div>
                 <div className="chart-bar-value">{Math.round((praOração/total)*100 || 0)}%</div>
+              </div>
+            </div>
+
+            <div className="interest-chart" style={{marginTop: '0.5rem'}}>
+              <h3 className="chart-title">Distribuição de Interesse</h3>
+              <div className="interest-bars">
+                {[5, 4, 3, 2, 1].map(stars => {
+                   const count = interestDist[stars];
+                   const pct = total ? (count / total) * 100 : 0;
+                   return (
+                     <div className="interest-vertical" key={stars}>
+                        <div className="interest-v-value">{count}</div>
+                        <div className="interest-v-track">
+                           <div className="interest-v-fill slide-up" style={{height: `${pct}%`, background: stars >= 4 ? '#00c864' : stars === 3 ? '#D4AF37' : '#ff4444'}}></div>
+                        </div>
+                        <div className="interest-v-label">{stars}★</div>
+                     </div>
+                   );
+                })}
               </div>
             </div>
           </div>
@@ -241,22 +272,22 @@ export default function TrackingView() {
                   </div>
 
                   <div className="user-fields">
-                    {/* Aceitou o Convite */}
+                    {/* Primeiro Contato */}
                     <div className="field-group">
-                      <label className="field-label">Aceitou o convite (Primeiro Contato)?</label>
+                      <label className="field-label" style={{color: '#D4AF37', borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '0.3rem'}}>1. O Match (Stand)</label>
+                      <label className="field-label" style={{marginTop: '0.4rem'}}>Aceitou o convite / Abertura?</label>
                       <select 
                         className="field-select" 
                         value={person.tracking.aceitouConvite} 
                         onChange={(e) => updateTracking(person.rank, 'aceitouConvite', e.target.value)}
                       >
                         <option value="">Selecione...</option>
-                        <option value="Sim aceitou">Sim, aceitou!</option>
-                        <option value="Não pode agora mas quer conhecer">Não pode agora, mas quer conhecer</option>
-                        <option value="Não respondeu">Não respondeu / Não</option>
+                        <option value="Sim aceitou">Sim, aceitou muito bem!</option>
+                        <option value="Não pode agora mas quer conhecer">Curtiu, mas não pode agora</option>
+                        <option value="Não respondeu">Fechado / Não</option>
                       </select>
                     </div>
 
-                    {/* Conversei Sinceramente?</ */}
                     <div className="field-group">
                       <label className="field-label">Conversei sinceramente com ele(a)?</label>
                       <select 
@@ -265,9 +296,25 @@ export default function TrackingView() {
                         onChange={(e) => updateTracking(person.rank, 'conversouBem', e.target.value)}
                       >
                         <option value="">Selecione...</option>
-                        <option value="Sim">Sim</option>
-                        <option value="Não">Não</option>
-                        <option value="Não respondeu mt">Não respondeu muito</option>
+                        <option value="Sim">Sim, foi profundo</option>
+                        <option value="Não">Não deu tempo/profundidade</option>
+                        <option value="Não respondeu mt">Ele(a) não abriu muito</option>
+                      </select>
+                    </div>
+
+                    {/* Espiritual */}
+                    <div className="field-group" style={{marginTop: '0.5rem'}}>
+                      <label className="field-label" style={{color: '#90caf9', borderBottom: '1px solid rgba(144,202,249,0.2)', paddingBottom: '0.3rem'}}>2. Espiritual</label>
+                      <label className="field-label" style={{marginTop: '0.4rem'}}>Rezei por ele(a) hoje? 🙏</label>
+                      <select 
+                        className="field-select" 
+                        value={person.tracking.rezei} 
+                        onChange={(e) => updateTracking(person.rank, 'rezei', e.target.value)}
+                        style={{borderColor: person.tracking.rezei === 'Sim' ? '#90caf9' : 'rgba(255,255,255,0.1)'}}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Sim">Sim, eu o(a) entreguei a Deus!</option>
+                        <option value="Ainda não">Ainda não...</option>
                       </select>
                     </div>
 
@@ -282,9 +329,10 @@ export default function TrackingView() {
                       />
                     </div>
 
-                    {/* Aceitou ir pra vigilia */}
-                    <div className="field-group">
-                      <label className="field-label">Aceitou ir para a Vigília?</label>
+                    {/* Vigília */}
+                    <div className="field-group" style={{marginTop: '0.5rem'}}>
+                      <label className="field-label" style={{color: '#ff3c00', borderBottom: '1px solid rgba(255,60,0,0.2)', paddingBottom: '0.3rem'}}>3. O Evento (Vigília)</label>
+                      <label className="field-label" style={{marginTop: '0.4rem'}}>Aceitou ir para a Vigília?</label>
                       <select 
                         className="field-select" 
                         value={person.tracking.aceitouVigilia} 
