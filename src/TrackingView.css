@@ -425,3 +425,179 @@
 .slide-up {
   animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* Master/Detail Additional Styles */
+.compact-card {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.compact-card:active {
+  transform: scale(0.98);
+}
+
+.card-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.btn-acompanhar {
+  background: rgba(212, 175, 55, 0.15);
+  color: #D4AF37;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.inline-badge {
+  background: rgba(212, 175, 55, 0.2);
+  color: #D4AF37;
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.inline-badge.none {
+  background: rgba(255, 255, 255, 0.05);
+  color: #888;
+}
+
+/* Ficha View */
+.ficha-view {
+  background: #050505;
+  min-height: 100vh;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.btn-voltar {
+  background: transparent;
+  color: #D4AF37;
+  border: none;
+  font-size: 1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 1rem 0;
+  cursor: pointer;
+}
+
+.ficha-header-block {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  background: #121214;
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  margin-bottom: 2rem;
+}
+
+.ficha-circular-wrapper {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+}
+
+.circular-progress-mini {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.circular-chart {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 250px;
+}
+
+.circular-chart-mini {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 2.5;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  transition: stroke-dasharray 1s ease-out;
+}
+
+.gold .circle { stroke: #D4AF37; }
+.green .circle { stroke: #00c864; }
+
+.percentage {
+  fill: #fff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  text-anchor: middle;
+}
+
+.ficha-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ficha-panel {
+  background: rgba(18, 18, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.ficha-panel.glow-panel {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.05);
+}
+
+.team-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.team-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #b4b4b4;
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.team-btn.active {
+  background: rgba(212, 175, 55, 0.2);
+  border-color: #D4AF37;
+  color: #D4AF37;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}

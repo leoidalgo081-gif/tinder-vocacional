@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Phone, MessageSquare, PlusCircle, CheckCircle2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
+import { Lock, Phone, MessageSquare, PlusCircle, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, ArrowLeft, UserCircle } from 'lucide-react';
 import './TrackingView.css';
 
 // The provided participant list
@@ -41,12 +41,18 @@ const INITIAL_BODIES = [
 export default function TrackingView() {
   const [authKey, setAuthKey] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [view, setView] = useState('list'); // 'list' | 'dashboard'
+  const [view, setView] = useState('list'); // 'list' | 'dashboard' | 'ficha'
   const [data, setData] = useState([]);
-  const [expanded, setExpanded] = useState({});
+  const [selectedRank, setSelectedRank] = useState(null);
 
-  const toggleExpand = (rank) => {
-    setExpanded(prev => ({ ...prev, [rank]: !prev[rank] }));
+  const openFicha = (rank) => {
+    setSelectedRank(rank);
+    setView('ficha');
+  };
+
+  const closeFicha = () => {
+    setSelectedRank(null);
+    setView('list');
   };
 
   const getDefaultTracking = () => ({
@@ -59,7 +65,8 @@ export default function TrackingView() {
     ajudaIda: '',
     grupoDeOracao: '',
     interesse: 0, // 0 to 5
-    rezei: ''
+    rezei: '',
+    acompanhador: ''
   });
 
   // Load from local storage or set initial
@@ -105,7 +112,7 @@ export default function TrackingView() {
 
   const calculateProgress = (tracking) => {
     let completed = 0;
-    const totalFields = 9; // Excluding date and interest
+    const totalFields = 10; // Excluding date and interest
     
     if (tracking.aceitouConvite) completed++;
     if (tracking.conversouBem) completed++;
@@ -115,6 +122,7 @@ export default function TrackingView() {
     if (tracking.ajudaIda) completed++;
     if (tracking.grupoDeOracao) completed++;
     if (tracking.rezei) completed++;
+    if (tracking.acompanhador) completed++;
     if (tracking.interesse > 0) completed++;
 
     return Math.round((completed / totalFields) * 100);
@@ -253,40 +261,108 @@ export default function TrackingView() {
             {data.map(person => {
               const progress = calculateProgress(person.tracking);
               return (
-                <div key={person.rank} className="user-card">
-                  
-                  <div className="user-header" onClick={() => toggleExpand(person.rank)} style={{cursor: 'pointer'}}>
+                <div key={person.rank} className="user-card compact-card" onClick={() => { setSelectedRank(person.rank); setView('ficha'); }}>
+                  <div className="user-header">
                     <div className="user-info">
                        <span className="user-rank">Posição #{person.rank}</span>
                        <h3 className="user-name">{person.name} <span style={{fontSize: '0.8rem', color: '#b4b4b4', fontWeight: '400'}}>({person.age} anos)</span></h3>
-                       <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
-                         <p className="user-points" style={{margin: 0}}>{person.score} pontos</p>
-                         <span style={{color: progress === 100 ? '#00c864' : '#D4AF37', fontSize: '0.8rem', fontWeight: 'bold'}}>{progress}%</span>
+                       <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.2rem'}}>
+                         {person.tracking.acompanhador ? (
+                           <span className="owner-badge inline-badge">{person.tracking.acompanhador}</span>
+                         ) : (
+                           <span className="owner-badge inline-badge none">Sem Dono</span>
+                         )}
+                         <p className="user-points" style={{margin: 0, fontSize: '0.75rem'}}>{person.score} pts</p>
                        </div>
                     </div>
-                    <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
-                      <a href={person.link.replace('https://wa.me/', 'https://api.whatsapp.com/send/?phone=').replace('?text=', '&text=')} target="_blank" rel="noreferrer" className="wa-btn" onClick={(e) => e.stopPropagation()}>
-                        <MessageSquare size={16} fill="currentColor" /> WA
+                    <div className="card-actions">
+                       <span className="circular-progress-mini">
+                          <svg viewBox="0 0 36 36" className="circular-chart-mini gold">
+                            <path className="circle-bg"
+                              d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path className="circle"
+                              strokeDasharray={`${progress}, 100`}
+                              d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <text x="18" y="20.35" className="percentage">{progress}%</text>
+                          </svg>
+                       </span>
+                       <button className="btn-acompanhar">Acompanhar</button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {view === 'ficha' && selectedRank !== null && (() => {
+           const person = data.find(d => d.rank === selectedRank);
+           if (!person) return null;
+           const progress = calculateProgress(person.tracking);
+           const team = ['Laura', 'Leonardo', 'Adney', 'Mari Raquel', 'Livia'];
+
+           return (
+             <div className="ficha-view slide-in-right">
+                <button className="btn-voltar" onClick={() => setView('list')}>
+                   <ArrowLeft size={20} /> Voltar
+                </button>
+
+                <div className="ficha-header-block">
+                   <div className="ficha-circular-wrapper">
+                      <svg viewBox="0 0 36 36" className={`circular-chart ${progress === 100 ? 'green' : 'gold'}`}>
+                        <path className="circle-bg"
+                          d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path className="circle"
+                          strokeDasharray={`${progress}, 100`}
+                          d="M18 2.0845
+                            a 15.9155 15.9155 0 0 1 0 31.831
+                            a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <text x="18" y="21.5" className="percentage" style={{fontSize: '0.6rem'}}>{progress}%</text>
+                      </svg>
+                   </div>
+                   <div className="ficha-header-info">
+                      <span className="user-rank" style={{fontSize: '0.9rem'}}>#{person.rank} Match</span>
+                      <h2 style={{margin: '0.2rem 0', fontFamily: 'Playfair Display', fontSize: '2rem', color: '#D4AF37'}}>{person.name}</h2>
+                      <p style={{color: '#b4b4b4', fontSize: '0.85rem', margin: 0}}>{person.age} anos • {person.score} pontos</p>
+
+                      <a href={person.link.replace('https://wa.me/', 'https://api.whatsapp.com/send/?phone=').replace('?text=', '&text=')} target="_blank" rel="noreferrer" className="wa-btn" style={{marginTop: '0.8rem', width: 'fit-content', padding: '0.8rem 1.5rem', background: 'linear-gradient(90deg, #128C7E, #25D366)'}}>
+                        <MessageSquare size={18} fill="currentColor" /> Chat WhatsApp
                       </a>
-                      <div className="expand-icon" style={{color: '#D4AF37', transition: 'transform 0.3s'}}>
-                        {expanded[person.rank] ? <ChevronUp size={24} /> : <ChevronDown size={24} />}
+                   </div>
+                </div>
+
+                <div className="ficha-body">
+                   {/* Equipe / Acompanhador */}
+                   <div className="ficha-panel glow-panel" style={{borderColor: person.tracking.acompanhador ? '#D4AF37' : 'rgba(255,255,255,0.1)'}}>
+                      <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem'}}>
+                         <UserCircle size={20} color="#D4AF37" />
+                         <span style={{fontWeight: '700', color: '#fff', fontSize: '0.9rem', textTransform: 'uppercase'}}>Quem está acompanhando?</span>
                       </div>
-                    </div>
-                  </div>
+                      <div className="team-selector">
+                        {team.map(member => (
+                          <button 
+                            key={member}
+                            className={`team-btn ${person.tracking.acompanhador === member ? 'active' : ''}`}
+                            onClick={() => updateTracking(person.rank, 'acompanhador', person.tracking.acompanhador === member ? '' : member)}
+                          >
+                            {member}
+                          </button>
+                        ))}
+                      </div>
+                   </div>
 
-                  <div className="card-progress-container" onClick={() => toggleExpand(person.rank)} style={{cursor: 'pointer'}}>
-                    <div className="card-progress-header">
-                      <span>Progresso da Conversa</span>
-                      <span style={{color: progress === 100 ? '#D4AF37' : '#fff'}}>{progress}%</span>
-                    </div>
-                    <div className="card-track">
-                      <div className="card-fill" style={{width: `${progress}%`}}></div>
-                    </div>
-                  </div>
-
-                  {expanded[person.rank] && (
-                    <div className="user-card-body slide-down">
-                      <div className="user-fields">
+                   {/* Formulário Completo */}
+                   <div className="user-fields">
                         {/* Primeiro Contato */}
                         <div className="field-group">
                           <label className="field-label" style={{color: '#D4AF37', borderBottom: '1px solid rgba(212,175,55,0.2)', paddingBottom: '0.3rem'}}>1. O Match (Stand)</label>
@@ -449,14 +525,11 @@ export default function TrackingView() {
                           </div>
                         </div>
 
-                      </div>
-                    </div>
-                  )}
+                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
+             </div>
+           );
+        })()}
       </div>
     </div>
   );
