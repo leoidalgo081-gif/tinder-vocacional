@@ -1,0 +1,362 @@
+.tracking-app-container {
+  width: 100%;
+  min-height: 100dvh;
+  background: #050505;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  overflow-y: auto;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tracking-header {
+  padding: 1.5rem;
+  background: rgba(18, 18, 20, 0.95);
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tracking-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #D4AF37;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.tracking-subtitle {
+  color: #b4b4b4;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Authentication Screen */
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+  padding: 2rem;
+  background: radial-gradient(circle at 50% 0%, #3a1018, #050505 85%);
+}
+
+.auth-card {
+  background: rgba(18, 18, 20, 0.8);
+  padding: 2.5rem;
+  border-radius: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+  width: 100%;
+  max-width: 380px;
+}
+
+.auth-title {
+  color: #D4AF37;
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 2rem;
+}
+
+.auth-input {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  transition: border-color 0.3s;
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: #D4AF37;
+}
+
+/* Tracking Content */
+.tracking-content {
+  padding: 1.5rem;
+  padding-bottom: 5rem;
+}
+
+/* Dashboard Summary */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 1.2rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #D4AF37;
+  font-family: 'Playfair Display', serif;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: #b4b4b4;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 0.5rem;
+}
+
+.interest-chart {
+  grid-column: span 2;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 1.2rem;
+  border-radius: 16px;
+}
+
+.chart-title {
+  font-size: 0.85rem;
+  color: #D4AF37;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.chart-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+
+.chart-bar-label {
+  width: 40px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.chart-bar-track {
+  flex: 1;
+  height: 12px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.chart-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(212,175,55,0.5), #D4AF37);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.chart-bar-value {
+  width: 30px;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #b4b4b4;
+}
+
+/* Toggle Views */
+.view-toggles {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  background: rgba(255,255,255,0.05);
+  padding: 0.3rem;
+  border-radius: 12px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #b4b4b4;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn.active {
+  background: rgba(212,175,55,0.15);
+  color: #D4AF37;
+}
+
+/* User Card */
+.user-card {
+  background: #121214;
+  border: 1px solid rgba(212,175,55,0.15);
+  border-radius: 16px;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+}
+
+.user-header {
+  padding: 1.2rem;
+  background: rgba(212,175,55,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(212,175,55,0.1);
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-rank {
+  font-size: 0.75rem;
+  color: #D4AF37;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.user-name {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin: 0.25rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-points {
+  font-size: 0.9rem;
+  color: #b4b4b4;
+}
+
+.wa-btn {
+  background: #25D366;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.6rem 1rem;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+  transition: transform 0.2s;
+}
+
+.wa-btn:active {
+  transform: scale(0.95);
+}
+
+/* Card Progress */
+.card-progress-container {
+  padding: 1rem 1.2rem;
+  background: rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.card-progress-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: #b4b4b4;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.card-track {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.card-fill {
+  height: 100%;
+  background: #D4AF37;
+  transition: width 0.3s ease;
+}
+
+/* Forms / Fields Grid */
+.user-fields {
+  padding: 1.2rem;
+  display: grid;
+  gap: 1.2rem;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.field-label {
+  font-size: 0.8rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.field-select, .field-date {
+  width: 100%;
+  padding: 0.8rem;
+  background: #1a1a1f;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  appearance: none;
+}
+
+.field-select:focus, .field-date:focus {
+  outline: none;
+  border-color: #D4AF37;
+}
+
+/* Interest Rating */
+.interest-rating {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.star-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: rgba(255,255,255,0.15);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.star-btn.active {
+  color: #D4AF37;
+}

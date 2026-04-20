@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import MonitorView from './MonitorView.jsx'
+import TrackingView from './TrackingView.jsx'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -27,12 +28,15 @@ class ErrorBoundary extends Component {
   }
 }
 
-const isMonitor = window.location.hash === '#monitor';
+const hash = window.location.hash;
+let ActiveView = App;
+if (hash === '#monitor') ActiveView = MonitorView;
+if (hash === '#acompanhamento') ActiveView = TrackingView;
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
-      {isMonitor ? <MonitorView /> : <App />}
+      <ActiveView />
     </ErrorBoundary>
   </StrictMode>,
 )

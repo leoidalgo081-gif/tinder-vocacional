@@ -1,0 +1,384 @@
+import React, { useState, useEffect } from 'react';
+import { Lock, Phone, MessageSquare, PlusCircle, CheckCircle2, AlertCircle } from 'lucide-react';
+import './TrackingView.css';
+
+// The provided participant list
+const INITIAL_BODIES = [
+  { rank: 1, name: "Giovanna", age: 21, score: 14156, phone: "5511994819426", link: "https://wa.me/5511994819426?text=%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%20Giovanna%2C%20isso%20%C3%A9%20INCR%C3%8DVEL%21%20%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%0A%0AVoc%C3%AA%20conseguiu%20ficar%20em%20%2A%2A%F0%9F%A5%87%20PRIMEIRO%20LUGAR%2A%2A%20no%20noss" },
+  { rank: 2, name: "Ana", age: 18, score: 13999, phone: "5511958604709", link: "https://wa.me/5511958604709?text=%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%20Ana%2C%20isso%20%C3%A9%20INCR%C3%8DVEL%21%20%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%0A%0AVoc%C3%AA%20conseguiu%20ficar%20em%20%2A%2A%F0%9F%A5%88%20SEGUNDO%20LUGAR%2A%2A%20no%20nosso%20matching%21%20%F0%9F%98%B1%E2%9C%A8%0ASua%20pontua%C3%A7%C3%A3o%20foi%2013999%20%E2%80%94%20algo%20realmente%20impressionante%21%20%F0%9F%92%A5%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20teremos%20uma%20%2A%2Avig%C3%ADlia%20jovem%2A%2A%20muito%20especial.%0AQuer%20vir%20conhecer%20mais%20do%20nosso%20carisma%3F%20Seria%20maravilhoso%20ter%20voc%C3%AA%20com%20a%20gente%20%F0%9F%92%99%F0%9F%99%8F" },
+  { rank: 3, name: "Kelly", age: 39, score: 13909, phone: "5511969923149", link: "https://wa.me/5511969923149?text=%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%20Kelly%2C%20isso%20%C3%A9%20INCR%C3%8DVEL%21%20%F0%9F%94%A5%F0%9F%94%A5%F0%9F%94%A5%0A%0AVoc%C3%AA%20conseguiu%20ficar%20em%20%2A%2A%F0%9F%A5%89%20TERCEIRO%20LUGAR%2A%2A%20no%20nosso%20matching%21%20%F0%9F%98%B1%E2%9C%A8%0ASua%20pontua%C3%A7%C3%A3o%20foi%2013909%20%E2%80%94%20algo%20realmente%20impressionante%21%20%F0%9F%92%A5%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20teremos%20uma%20%2A%2Avig%C3%ADlia%20jovem%2A%2A%20muito%20especial.%0AQuer%20vir%20conhecer%20mais%20do%20nosso%20carisma%3F%20Seria%20maravilhoso%20ter%20voc%C3%AA%20com%20a%20gente%20%F0%9F%92%99%F0%9F%99%8F" },
+  { rank: 4, name: "João", age: 19, score: 13829, phone: "551192011816", link: "https://wa.me/551192011816?text=Oi%20Jo%C3%A3o%21%20Que%20alegria%20falar%20com%20voc%C3%AA%20%F0%9F%98%8A%0A%0AVoc%C3%AA%20lembra%20da%20gente%20do%20stand%20vocacional%20de%20s%C3%A1bado%3F%0ASeu%20resultado%20foi%20incr%C3%ADvel%3A%2013829%20pontos%20no%20matching%20%F0%9F%91%80%E2%9C%A8%0A%0ANeste%20s%C3%A1bado%20teremos%20uma%20vig%C3%ADlia%20jovem%20super%20especial%20%E2%9C%A8%0AQue%20tal%20conhecer%20um%20pouco%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 5, name: "Anna", age: 20, score: 13780, phone: "5511982015181", link: "https://wa.me/5511982015181?text=Oi%20Anna%21%20Que%20bom%20te%20reencontrar%21%20%F0%9F%99%8C%0A%0AA%20gente%20se%20conheceu%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0AVoc%C3%AA%20ficou%20entre%20os%20%2A%2ATOP%2010%2A%2A%20do%20nosso%20matching%20com%2013780%20pontos%20%F0%9F%98%8D%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem%20feita%20com%20muito%20carinho%20%F0%9F%92%99%0AQue%20tal%20conhecer%20um%20pouco%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 6, name: "Yasmim", age: 17, score: 13732, phone: "5511970160048", link: "https://wa.me/5511970160048?text=Oi%20Yasmim%21%20Que%20bom%20te%20reencontrar%21%20%F0%9F%99%8C%0A%0AA%20gente%20se%20conheceu%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0AVoc%C3%AA%20ficou%20entre%20os%20%2A%2ATOP%2010%2A%2A%20do%20nosso%20matching%20com%2013732%20pontos%20%F0%9F%98%8D%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem%20feita%20com%20muito%20carinho%20%F0%9F%92%99%0AQue%20tal%20conhecer%20um%20pouco%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 7, name: "Giovanna", age: 21, score: 13443, phone: "5511994819426", link: "https://wa.me/5511994819426?text=Oi%20Giovanna%21%20Que%20alegria%20falar%20com%20voc%C3%AA%20%F0%9F%98%8A%0A%0AA%20gente%20se%20conheceu%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0ASeu%20resultado%20foi%20incr%C3%ADvel%3A%2013443%20pontos%20no%20matching%20%F0%9F%91%80%E2%9C%A8%0A%0ANeste%20s%C3%A1bado%20teremos%20uma%20vig%C3%ADlia%20jovem%20super%20especial%20%E2%9C%A8%0AFica%20o%20convite%20pra%20vir%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%98%8A" },
+  { rank: 8, name: "Kelly", age: 15, score: 13420, phone: "5511963604858", link: "https://wa.me/5511963604858?text=Oi%20Kelly%21%20Que%20bom%20te%20reencontrar%21%20%F0%9F%99%8C%0A%0AVoc%C3%AA%20lembra%20da%20gente%20do%20stand%20vocacional%20de%20s%C3%A1bado%3F%0AVoc%C3%AA%20ficou%20entre%20os%20%2A%2ATOP%2010%2A%2A%20do%20nosso%20matching%20com%2013420%20pontos%20%F0%9F%98%8D%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem%20feita%20com%20muito%20carinho%20%F0%9F%92%99%0AFica%20o%20convite%20pra%20vir%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%98%8A" },
+  { rank: 9, name: "Helena", age: 15, score: 13292, phone: "5511959842293", link: "https://wa.me/5511959842293?text=Oi%20Helena%21%20Que%20alegria%20falar%20com%20voc%C3%AA%20%F0%9F%98%8A%0A%0AVoc%C3%AA%20lembra%20da%20gente%20do%20stand%20vocacional%20de%20s%C3%A1bado%3F%0ASeu%20resultado%20foi%20incr%C3%ADvel%3A%2013292%20pontos%20no%20matching%20%F0%9F%91%80%E2%9C%A8%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem%20feita%20com%20muito%20carinho%20%F0%9F%92%99%0AFica%20o%20convite%20pra%20vir%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%98%8A" },
+  { rank: 10, name: "Maria", age: 16, score: 13220, phone: "5511934290710", link: "https://wa.me/5511934290710?text=Oi%20Maria%21%20Que%20alegria%20falar%20com%20voc%C3%AA%20%F0%9F%98%8A%0A%0AA%20gente%20se%20conheceu%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0ASeu%20resultado%20foi%20incr%C3%ADvel%3A%2013220%20pontos%20no%20matching%20%F0%9F%91%80%E2%9C%A8%0A%0ANeste%20s%C3%A1bado%20teremos%20uma%20vig%C3%ADlia%20jovem%20super%20especial%20%E2%9C%A8%0AQue%20tal%20conhecer%20um%20pouco%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 11, name: "Catarina", age: 14, score: 13175, phone: "5511992336964", link: "https://wa.me/5511992336964?text=Ol%C3%A1%20Catarina%21%20Tudo%20bem%20por%20a%C3%AD%3F%20%E2%9C%A8%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0ASeu%20resultado%20no%20matching%20foi%2013175%20pontos%20%F0%9F%98%8A%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem.%0AQuer%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 12, name: "Gabriele", age: 26, score: 13160, phone: "5511968625624", link: "https://wa.me/5511968625624?text=Oi%20Gabriele%21%20Passando%20pra%20te%20dar%20um%20oi%20%F0%9F%98%84%0A%0AA%20gente%20se%20encontrou%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0ASeu%20resultado%20no%20matching%20foi%2013160%20pontos%20%F0%9F%98%8A%0A%0ANeste%20pr%C3%B3ximo%20s%C3%A1bado%20teremos%20uma%20vig%C3%ADlia%20jovem%20bem%20especial.%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 13, name: "Isabella", age: 15, score: 13073, phone: "5511933963311", link: "https://wa.me/5511933963311?text=Ol%C3%A1%20Isabella%21%20Tudo%20bem%20por%20a%C3%AD%3F%20%E2%9C%A8%0A%0ALembra%20da%20gente%20do%20stand%20vocacional%20do%20s%C3%A1bado%3F%0AOlhei%20seu%20matching%20e%20deu%2013073%20pontos%20%E2%80%94%20que%20legal%21%20%F0%9F%91%80%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AVoc%C3%AA%20gostaria%20de%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 14, name: "Caio", age: 17, score: 12757, phone: "5511942457108", link: "https://wa.me/5511942457108?text=Oi%20Caio%21%20Tudo%20bem%3F%20%F0%9F%98%8A%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0AVi%20aqui%20que%20voc%C3%AA%20fez%2012757%20pontos%20no%20nosso%20matching%20%E2%80%94%20muito%20bom%21%20%F0%9F%98%84%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem.%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 15, name: "Mamuella", age: 14, score: 12704, phone: "5511982151073", link: "https://wa.me/5511982151073?text=Ol%C3%A1%20Mamuella%21%20Tudo%20bem%20por%20a%C3%AD%3F%20%E2%9C%A8%0A%0ALembra%20da%20gente%20do%20stand%20vocacional%20do%20s%C3%A1bado%3F%0AVi%20aqui%20que%20voc%C3%AA%20fez%2012704%20pontos%20no%20nosso%20matching%20%E2%80%94%20muito%20bom%21%20%F0%9F%98%84%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 16, name: "Eduardo", age: 13, score: 12567, phone: "5511997290467", link: "https://wa.me/5511997290467?text=Oi%20Eduardo%21%20Que%20bom%20falar%20com%20voc%C3%AA%20%F0%9F%99%8C%0A%0ALembra%20da%20gente%20do%20stand%20vocacional%20do%20s%C3%A1bado%3F%0ASeu%20resultado%20no%20matching%20foi%2012567%20pontos%20%F0%9F%98%8A%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AVoc%C3%AA%20gostaria%20de%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 17, name: "Nikelly", age: 18, score: 12403, phone: "5511965648165", link: "https://wa.me/5511965648165?text=Oi%20Nikelly%21%20Passando%20pra%20te%20dar%20um%20oi%20%F0%9F%98%84%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0ASeu%20resultado%20no%20matching%20foi%2012403%20pontos%20%F0%9F%98%8A%0A%0ANeste%20pr%C3%B3ximo%20s%C3%A1bado%20teremos%20uma%20vig%C3%ADlia%20jovem%20bem%20especial.%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 18, name: "Davi", age: 36, score: 12266, phone: "5511986619208", link: "https://wa.me/5511986619208?text=Oi%20Davi%21%20Tudo%20bem%3F%20%F0%9F%98%8A%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0AVi%20aqui%20que%20voc%C3%AA%20fez%2012266%20pontos%20no%20nosso%20matching%20%E2%80%94%20muito%20bom%21%20%F0%9F%98%84%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem.%0AQuer%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 19, name: "Maysa", age: 14, score: 12148, phone: "5511913303848", link: "https://wa.me/5511913303848?text=Ol%C3%A1%20Maysa%21%20Tudo%20bem%20por%20a%C3%AD%3F%20%E2%9C%A8%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0AOlhei%20seu%20matching%20e%20deu%2012148%20pontos%20%E2%80%94%20que%20legal%21%20%F0%9F%91%80%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 20, name: "Antonia", age: 15, score: 12092, phone: "5511917703058", link: "https://wa.me/5511917703058?text=Oi%20Antonia%21%20Passando%20pra%20te%20dar%20um%20oi%20%F0%9F%98%84%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0AVi%20aqui%20que%20voc%C3%AA%20fez%2012092%20pontos%20no%20nosso%20matching%20%E2%80%94%20muito%20bom%21%20%F0%9F%98%84%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 21, name: "Marcel", age: 16, score: 11721, phone: "5511968747568", link: "https://wa.me/5511968747568?text=Oi%20Marcel%21%20Tudo%20bem%3F%20%F0%9F%98%8A%0A%0ALembra%20da%20gente%20do%20stand%20vocacional%20do%20s%C3%A1bado%3F%0ASeu%20resultado%20no%20matching%20foi%2011721%20pontos%20%F0%9F%98%8A%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 22, name: "Ivana", age: 20, score: 11699, phone: "5511958982986", link: "https://wa.me/5511958982986?text=Oi%20Ivana%21%20Que%20bom%20falar%20com%20voc%C3%AA%20%F0%9F%99%8C%0A%0AA%20gente%20se%20encontrou%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0ASeu%20resultado%20no%20matching%20foi%2011699%20pontos%20%F0%9F%98%8A%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem.%0AQuer%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 23, name: "Nathalia", age: 26, score: 11566, phone: "5511961801087", link: "https://wa.me/5511961801087?text=Oi%20Nathalia%21%20Que%20bom%20falar%20com%20voc%C3%AA%20%F0%9F%99%8C%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0AVi%20aqui%20que%20voc%C3%AA%20fez%2011566%20pontos%20no%20nosso%20matching%20%E2%80%94%20muito%20bom%21%20%F0%9F%98%84%0A%0ANeste%20pr%C3%B3ximo%20s%C3%A1bado%20teremos%20uma%20vig%C3%ADlia%20jovem%20bem%20especial.%0AQuer%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 24, name: "Patricia", age: 15, score: 11086, phone: "5511962947663", link: "https://wa.me/5511962947663?text=Ol%C3%A1%20Patricia%21%20Tudo%20bem%20por%20a%C3%AD%3F%20%E2%9C%A8%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0AVi%20aqui%20que%20voc%C3%AA%20fez%2011086%20pontos%20no%20nosso%20matching%20%E2%80%94%20muito%20bom%21%20%F0%9F%98%84%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 25, name: "Diogo", age: 14, score: 11083, phone: "5511966550190", link: "https://wa.me/5511966550190?text=Oi%20Diogo%21%20Passando%20pra%20te%20dar%20um%20oi%20%F0%9F%98%84%0A%0ALembra%20da%20gente%20do%20stand%20vocacional%20do%20s%C3%A1bado%3F%0AOlhei%20seu%20matching%20e%20deu%2011083%20pontos%20%E2%80%94%20que%20legal%21%20%F0%9F%91%80%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AQuer%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 26, name: "Gisele", age: 22, score: 11053, phone: "5511985865191", link: "https://wa.me/5511985865191?text=Oi%20Gisele%21%20Que%20bom%20falar%20com%20voc%C3%AA%20%F0%9F%99%8C%0A%0ALembra%20da%20gente%20do%20stand%20vocacional%20do%20s%C3%A1bado%3F%0ASeu%20resultado%20no%20matching%20foi%2011053%20pontos%20%F0%9F%98%8A%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AVoc%C3%AA%20gostaria%20de%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 27, name: "Mariana", age: 14, score: 10525, phone: "551199525875", link: "https://wa.me/551199525875?text=Oi%20Mariana%21%20Tudo%20bem%3F%20%F0%9F%98%8A%0A%0ALembra%20da%20gente%20do%20stand%20vocacional%20do%20s%C3%A1bado%3F%0AOlhei%20seu%20matching%20e%20deu%2010525%20pontos%20%E2%80%94%20que%20legal%21%20%F0%9F%91%80%0A%0ANeste%20pr%C3%B3ximo%20s%C3%A1bado%20teremos%20uma%20vig%C3%ADlia%20jovem%20bem%20especial.%0AVoc%C3%AA%20gostaria%20de%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 28, name: "Enzo", age: 15, score: 10422, phone: "5511930058867", link: "https://wa.me/5511930058867?text=Oi%20Enzo%21%20Passando%20pra%20te%20dar%20um%20oi%20%F0%9F%98%84%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0ASeu%20resultado%20no%20matching%20foi%2010422%20pontos%20%F0%9F%98%8A%0A%0ANo%20pr%C3%B3ximo%20s%C3%A1bado%20vamos%20ter%20uma%20vig%C3%ADlia%20jovem.%0AVoc%C3%AA%20gostaria%20de%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 29, name: "Leonardo", age: 30, score: 10348, phone: "5511977438988", link: "https://wa.me/5511977438988?text=Oi%20Leonardo%21%20Que%20bom%20falar%20com%20voc%C3%AA%20%F0%9F%99%8C%0A%0ALembra%20da%20gente%20do%20stand%20vocacional%20do%20s%C3%A1bado%3F%0AOlhei%20seu%20matching%20e%20deu%2010348%20pontos%20%E2%80%94%20que%20legal%21%20%F0%9F%91%80%0A%0ANeste%20pr%C3%B3ximo%20s%C3%A1bado%20teremos%20uma%20vig%C3%ADlia%20jovem%20bem%20especial.%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 30, name: "Larissa", age: 15, score: 9972, phone: "5511956404585", link: "https://wa.me/5511956404585?text=Ol%C3%A1%20Larissa%21%20Tudo%20bem%20por%20a%C3%AD%3F%20%E2%9C%A8%0A%0AN%C3%B3s%20nos%20vimos%20no%20stand%20vocacional%20s%C3%A1bado%20passado%20%F0%9F%98%8A%0AOlhei%20seu%20matching%20e%20deu%209972%20pontos%20%E2%80%94%20que%20legal%21%20%F0%9F%91%80%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AFica%20o%20convite%20pra%20voc%C3%AA%20conhecer%20mais%20do%20nosso%20carisma%20%F0%9F%92%99" },
+  { rank: 31, name: "Richard", age: 18, score: 9673, phone: "5511991365182", link: "https://wa.me/5511991365182?text=Oi%20Richard%21%20Tudo%20bem%3F%20%F0%9F%98%8A%0A%0ALembra%20da%20gente%20do%20stand%20vocacional%20do%20s%C3%A1bado%3F%0AOlhei%20seu%20matching%20e%20deu%209673%20pontos%20%E2%80%94%20que%20legal%21%20%F0%9F%91%80%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AVoc%C3%AA%20gostaria%20de%20conhecer%20mais%20do%20nosso%20carisma%3F" },
+  { rank: 32, name: "Alexandre", age: 37, score: 9547, phone: "5511977061096", link: "https://wa.me/5511977061096?text=Oi%20Alexandre%21%20Passando%20pra%20te%20dar%20um%20oi%20%F0%9F%98%84%0A%0AA%20gente%20se%20encontrou%20no%20stand%20vocacional%20no%20s%C3%A1bado%2C%20lembra%3F%0AOlhei%20seu%20matching%20e%20deu%209547%20pontos%20%E2%80%94%20que%20legal%21%20%F0%9F%91%80%0A%0AEstamos%20preparando%20uma%20vig%C3%ADlia%20jovem%20para%20o%20pr%C3%B3ximo%20s%C3%A1bado%20%F0%9F%99%8F%0AVoc%C3%AA%20gostaria%20de%20conhecer%20mais%20do%20nosso%20carisma%3F" }
+];
+
+export default function TrackingView() {
+  const [authKey, setAuthKey] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [view, setView] = useState('list'); // 'list' | 'dashboard'
+  const [data, setData] = useState([]);
+
+  const getDefaultTracking = () => ({
+    aceitouConvite: '',
+    conversouBem: '',
+    quando: '',
+    aceitouVigilia: '',
+    segundaAbordagem: '',
+    convidarAmigo: '',
+    ajudaIda: '',
+    grupoDeOracao: '',
+    interesse: 0 // 0 to 5
+  });
+
+  // Load from local storage or set initial
+  useEffect(() => {
+    const saved = localStorage.getItem('trackingData');
+    if (saved) {
+      // Merge with initial just in case new people are added
+      const parsed = JSON.parse(saved);
+      const merged = INITIAL_BODIES.map(p => {
+        const existing = parsed.find(e => e.rank === p.rank);
+        return existing ? { ...p, ...existing } : { ...p, tracking: getDefaultTracking() };
+      });
+      setData(merged);
+    } else {
+      setData(INITIAL_BODIES.map(p => ({ ...p, tracking: getDefaultTracking() })));
+    }
+  }, []);
+
+  // Save to local storage whenever data changes
+  useEffect(() => {
+    if (data.length > 0) {
+      localStorage.setItem('trackingData', JSON.stringify(data));
+    }
+  }, [data]);
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (authKey === 'shalom2026') {
+      setIsAuthenticated(true);
+    } else {
+      alert("Senha incorreta.");
+    }
+  };
+
+  const updateTracking = (rank, field, value) => {
+    setData(prev => prev.map(p => {
+      if (p.rank === rank) {
+        return { ...p, tracking: { ...p.tracking, [field]: value } };
+      }
+      return p;
+    }));
+  };
+
+  const calculateProgress = (tracking) => {
+    let completed = 0;
+    const totalFields = 8; // Excluding date and interest
+    
+    if (tracking.aceitouConvite) completed++;
+    if (tracking.conversouBem) completed++;
+    if (tracking.aceitouVigilia) completed++;
+    if (tracking.segundaAbordagem) completed++;
+    if (tracking.convidarAmigo) completed++;
+    if (tracking.ajudaIda) completed++;
+    if (tracking.grupoDeOracao) completed++;
+    if (tracking.interesse > 0) completed++;
+
+    return Math.round((completed / totalFields) * 100);
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="auth-container">
+        <div className="auth-card">
+          <Lock size={48} color="#D4AF37" style={{ marginBottom: '1rem' }} />
+          <h2 className="auth-title">Acesso Restrito</h2>
+          <p style={{ color: '#b4b4b4', marginBottom: '2rem', fontSize: '0.9rem' }}>
+            Digite a senha da equipe para acessar o acompanhamento do Stand.
+          </p>
+          <form onSubmit={handleLogin}>
+            <input 
+              type="password" 
+              className="auth-input" 
+              placeholder="Senha de acesso" 
+              value={authKey} 
+              onChange={e => setAuthKey(e.target.value)} 
+            />
+            <button type="submit" className="btn-primary" style={{ width: '100%', padding: '1rem' }}>
+              ENTRAR NA PLANILHA
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // Dashboard calculations
+  const total = data.length;
+  const conversados = data.filter(d => d.tracking.conversouBem === 'Sim').length;
+  const confirmadosVigilia = data.filter(d => d.tracking.aceitouVigilia === 'Sim aceitou').length;
+  const muitoInteressados = data.filter(d => d.tracking.interesse >= 4).length;
+  const praOração = data.filter(d => d.tracking.grupoDeOracao === 'Sim').length;
+
+  return (
+    <div className="tracking-app-container">
+      <div className="tracking-header">
+        <h1 className="tracking-title">Match Vocacional</h1>
+        <p className="tracking-subtitle">Acompanhamento Stand | Vigilância</p>
+      </div>
+
+      <div className="tracking-content">
+        <div className="view-toggles">
+          <button className={`toggle-btn ${view === 'list' ? 'active' : ''}`} onClick={() => setView('list')}>
+            LISTA ({total})
+          </button>
+          <button className={`toggle-btn ${view === 'dashboard' ? 'active' : ''}`} onClick={() => setView('dashboard')}>
+            GRÁFICOS
+          </button>
+        </div>
+
+        {view === 'dashboard' && (
+          <div className="dashboard-grid">
+            <div className="stat-card">
+              <span className="stat-value">{conversados}/{total}</span>
+              <span className="stat-label">Conversei Sinc.</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-value" style={{color: '#ff3c00'}}>{confirmadosVigilia}</span>
+              <span className="stat-label">Vão na Vigília</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-value" style={{color: '#00c864'}}>{muitoInteressados}</span>
+              <span className="stat-label">Alto Interesse (+4★)</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-value">{praOração}</span>
+              <span className="stat-label">Pro Grupo Oração</span>
+            </div>
+
+            <div className="interest-chart">
+              <h3 className="chart-title">Visão Geral do Evento</h3>
+              
+              <div className="chart-bar-row">
+                <div className="chart-bar-label"><MessageSquare size={14}/> Abordados</div>
+                <div className="chart-bar-track">
+                  <div className="chart-bar-fill" style={{width: `${(conversados/total)*100}%`, background: '#2196F3'}}></div>
+                </div>
+                <div className="chart-bar-value">{Math.round((conversados/total)*100 || 0)}%</div>
+              </div>
+
+              <div className="chart-bar-row">
+                <div className="chart-bar-label"><CheckCircle2 size={14}/> Vigília</div>
+                <div className="chart-bar-track">
+                   <div className="chart-bar-fill" style={{width: `${(confirmadosVigilia/total)*100}%`, background: '#ff3c00'}}></div>
+                </div>
+                <div className="chart-bar-value">{Math.round((confirmadosVigilia/total)*100 || 0)}%</div>
+              </div>
+
+              <div className="chart-bar-row">
+                <div className="chart-bar-label"><PlusCircle size={14}/> G.O.</div>
+                <div className="chart-bar-track">
+                   <div className="chart-bar-fill" style={{width: `${(praOração/total)*100}%`, background: '#00c864'}}></div>
+                </div>
+                <div className="chart-bar-value">{Math.round((praOração/total)*100 || 0)}%</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {view === 'list' && (
+          <div className="user-list">
+            {data.map(person => {
+              const progress = calculateProgress(person.tracking);
+              return (
+                <div key={person.rank} className="user-card">
+                  
+                  <div className="user-header">
+                    <div className="user-info">
+                       <span className="user-rank">Posição #{person.rank}</span>
+                       <h3 className="user-name">{person.name} <span style={{fontSize: '0.8rem', color: '#b4b4b4', fontWeight: '400'}}>({person.age} anos)</span></h3>
+                       <p className="user-points">{person.score} pontos</p>
+                    </div>
+                    <a href={person.link} target="_blank" rel="noreferrer" className="wa-btn">
+                      <Phone size={16} fill="currentColor" /> Chamar
+                    </a>
+                  </div>
+
+                  <div className="card-progress-container">
+                    <div className="card-progress-header">
+                      <span>Progresso da Conversa</span>
+                      <span style={{color: progress === 100 ? '#D4AF37' : '#fff'}}>{progress}%</span>
+                    </div>
+                    <div className="card-track">
+                      <div className="card-fill" style={{width: `${progress}%`}}></div>
+                    </div>
+                  </div>
+
+                  <div className="user-fields">
+                    {/* Aceitou o Convite */}
+                    <div className="field-group">
+                      <label className="field-label">Aceitou o convite (Primeiro Contato)?</label>
+                      <select 
+                        className="field-select" 
+                        value={person.tracking.aceitouConvite} 
+                        onChange={(e) => updateTracking(person.rank, 'aceitouConvite', e.target.value)}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Sim aceitou">Sim, aceitou!</option>
+                        <option value="Não pode agora mas quer conhecer">Não pode agora, mas quer conhecer</option>
+                        <option value="Não respondeu">Não respondeu / Não</option>
+                      </select>
+                    </div>
+
+                    {/* Conversei Sinceramente?</ */}
+                    <div className="field-group">
+                      <label className="field-label">Conversei sinceramente com ele(a)?</label>
+                      <select 
+                        className="field-select" 
+                        value={person.tracking.conversouBem} 
+                        onChange={(e) => updateTracking(person.rank, 'conversouBem', e.target.value)}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                        <option value="Não respondeu mt">Não respondeu muito</option>
+                      </select>
+                    </div>
+
+                    {/* Quando */}
+                    <div className="field-group">
+                      <label className="field-label">Marcou para quando?</label>
+                      <input 
+                        type="date" 
+                        className="field-date" 
+                        value={person.tracking.quando} 
+                        onChange={(e) => updateTracking(person.rank, 'quando', e.target.value)}
+                      />
+                    </div>
+
+                    {/* Aceitou ir pra vigilia */}
+                    <div className="field-group">
+                      <label className="field-label">Aceitou ir para a Vigília?</label>
+                      <select 
+                        className="field-select" 
+                        value={person.tracking.aceitouVigilia} 
+                        onChange={(e) => updateTracking(person.rank, 'aceitouVigilia', e.target.value)}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Sim aceitou">Sim, aceitou!</option>
+                        <option value="Não pode agora mas quer conhecer">Não pode agora, mas quer conhecer</option>
+                        <option value="Recusou">Recusou</option>
+                      </select>
+                    </div>
+
+                    {/* 2a Abordagem */}
+                    <div className="field-group">
+                      <label className="field-label">2ª Abordagem na Semana?</label>
+                      <select 
+                        className="field-select" 
+                        value={person.tracking.segundaAbordagem} 
+                        onChange={(e) => updateTracking(person.rank, 'segundaAbordagem', e.target.value)}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Sim eu falei com ela">Sim, eu falei</option>
+                        <option value="Ela vai interessada">Ela que veio interessada</option>
+                        <option value="Não falei ainda">Ainda não mandei</option>
+                      </select>
+                    </div>
+
+                    {/* Convidar amigo */}
+                    <div className="field-group">
+                      <label className="field-label">Pedi pra levar um amigo(a)?</label>
+                      <select 
+                        className="field-select" 
+                        value={person.tracking.convidarAmigo} 
+                        onChange={(e) => updateTracking(person.rank, 'convidarAmigo', e.target.value)}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Sim ela aceitou e vai levar alguém">Sim, vai levar alguém!</option>
+                        <option value="Não consegue">Não conseguiu / vai sozinho(a)</option>
+                      </select>
+                    </div>
+
+                    {/* Ajuda ida */}
+                    <div className="field-group">
+                      <label className="field-label">Precisa de ajuda com o trajeto?</label>
+                      <select 
+                        className="field-select" 
+                        value={person.tracking.ajudaIda} 
+                        onChange={(e) => updateTracking(person.rank, 'ajudaIda', e.target.value)}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Ela falou q é tranquilo e chega">Tranquilo, ele(a) chega!</option>
+                        <option value="Sim">Sim, me coloquei para ajudar</option>
+                        <option value="e resposta nao respondeu, nao ligou">Não respondeu / Não ligou</option>
+                      </select>
+                    </div>
+
+                    {/* Aceitou ir pro grupo de oração */}
+                    <div className="field-group">
+                      <label className="field-label">Aceitou o convite para o Grupo de Oração?</label>
+                      <select 
+                        className="field-select" 
+                        value={person.tracking.grupoDeOracao} 
+                        onChange={(e) => updateTracking(person.rank, 'grupoDeOracao', e.target.value)}
+                      >
+                        <option value="">Selecione...</option>
+                        <option value="Sim">Sim!</option>
+                        <option value="Ainda vai pensar">Ainda vai pensar</option>
+                        <option value="Não">Não</option>
+                      </select>
+                    </div>
+
+                    {/* Nivel de Interesse */}
+                    <div className="field-group" style={{marginTop: '0.5rem', marginBottom: '0.5rem'}}>
+                      <label className="field-label" style={{color: '#D4AF37'}}>Nível de Interesse (Termômetro 🔥)</label>
+                      <div className="interest-rating">
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <button 
+                            key={star}
+                            className={`star-btn ${person.tracking.interesse >= star ? 'active' : ''}`}
+                            onClick={() => updateTracking(person.rank, 'interesse', star)}
+                          >
+                            ★
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
