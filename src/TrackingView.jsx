@@ -141,8 +141,14 @@ export default function TrackingView() {
       })
       .subscribe();
 
+    // Fallback polling de 5 segundos para caso a rede móvel perca o websocket
+    const intervalId = setInterval(() => {
+      fetchAndSync();
+    }, 5000);
+
     return () => {
       supabase.removeChannel(channel);
+      clearInterval(intervalId);
     };
   }, []);
 
