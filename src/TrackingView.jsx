@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
 import { Lock, Phone, MessageSquare, PlusCircle, CheckCircle2, AlertCircle, ChevronDown, ChevronUp, ArrowLeft, UserCircle } from 'lucide-react';
 import './TrackingView.css';
 
@@ -41,6 +42,7 @@ export default function TrackingView() {
   const [view, setView] = useState('list'); // 'list' | 'dashboard' | 'ficha'
   const [data, setData] = useState([]);
   const [selectedRank, setSelectedRank] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const openFicha = (rank) => {
     setSelectedRank(rank);
@@ -68,28 +70,65 @@ export default function TrackingView() {
     acompanhador: ''
   });
 
-  // Load from local storage or set initial
-  useEffect(() => {
-    const saved = localStorage.getItem('trackingData');
-    if (saved) {
-      // Merge with initial just in case new people are added
-      const parsed = JSON.parse(saved);
-      const merged = INITIAL_BODIES.map(p => {
-        const existing = parsed.find(e => e.rank === p.rank);
-        return existing ? { ...p, tracking: { ...getDefaultTracking(), ...existing.tracking } } : { ...p, tracking: getDefaultTracking() };
-      });
-      setData(merged);
-    } else {
-      setData(INITIAL_BODIES.map(p => ({ ...p, tracking: getDefaultTracking() })));
-    }
-  }, []);
+  const mergeData = (dbMatches) => {
+    const merged = [...INITIAL_BODIES.map(p => ({
+      ...p,
+      tracking: getDefaultTracking()
+    }))];
 
-  // Save to local storage whenever data changes
-  useEffect(() => {
-    if (data.length > 0) {
-      localStorage.setItem('trackingData', JSON.stringify(data));
+    dbMatches.forEach(dbPerson => {
+      const index = merged.findIndex(p => p.phone === dbPerson.phone || (p.name === dbPerson.name && p.age === dbPerson.age));
+      
+      const personData = {
+        name: dbPerson.name,
+        age: dbPerson.age,
+        score: dbPerson.points,
+        phone: dbPerson.phone,
+        link: `https://wa.me/${dbPerson.phone}`,
+        tracking: { ...getDefaultTracking(), ...(dbPerson.tracking || {}) }
+      };
+
+      if (index !== -1) {
+        merged[index] = { ...merged[index], ...personData, rank: merged[index].rank };
+      } else {
+        merged.push({ ...personData, rank: dbPerson.id });
+      }
+    });
+
+    return merged.sort((a, b) => b.score - a.score);
+  };
+
+  const fetchAndSync = async () => {
+    const { data: dbMatches, error } = await supabase
+      .from('matches')
+      .select('*');
+    
+    if (error) {
+      console.error('Error fetching:', error);
+    } else {
+      setData(mergeData(dbMatches || []));
     }
-  }, [data]);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchAndSync();
+
+    const channel = supabase
+      .channel('tracking_changes')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'matches' 
+      }, () => {
+        fetchAndSync();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -100,13 +139,30 @@ export default function TrackingView() {
     }
   };
 
-  const updateTracking = (rank, field, value) => {
+  const updateTracking = async (rank, field, value) => {
+    const person = data.find(p => p.rank === rank);
+    if (!person) return;
+
+    const newTracking = { ...person.tracking, [field]: value };
+    
+    // Optimistic local update
     setData(prev => prev.map(p => {
-      if (p.rank === rank) {
-        return { ...p, tracking: { ...p.tracking, [field]: value } };
-      }
+      if (p.rank === rank) return { ...p, tracking: newTracking };
       return p;
     }));
+
+    // Update Supabase
+    const { error } = await supabase
+      .from('matches')
+      .upsert({
+        name: person.name,
+        phone: person.phone,
+        age: person.age,
+        points: person.score,
+        tracking: newTracking
+      }, { onConflict: 'phone' });
+
+    if (error) console.error('Error syncing tracking:', error);
   };
 
   const calculateProgress = (tracking) => {
