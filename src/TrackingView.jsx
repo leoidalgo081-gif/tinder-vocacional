@@ -93,7 +93,8 @@ export default function TrackingView() {
         merged[index] = { 
           ...merged[index], 
           score: dbPerson.points, 
-          tracking: { ...merged[index].tracking, ...(dbPerson.tracking || {}) }
+          tracking: { ...merged[index].tracking, ...(dbPerson.tracking || {}) },
+          db_id: dbPerson.id
         };
       } else {
         const phoneWithCountry = cleanDbPhone.startsWith('55') ? cleanDbPhone : `55${cleanDbPhone}`;
@@ -104,7 +105,8 @@ export default function TrackingView() {
           phone: dbPerson.phone,
           link: `https://wa.me/${phoneWithCountry}`,
           rank: dbPerson.id,
-          tracking: { ...getDefaultTracking(), ...(dbPerson.tracking || {}) }
+          tracking: { ...getDefaultTracking(), ...(dbPerson.tracking || {}) },
+          db_id: dbPerson.id
         });
       }
     });
@@ -165,18 +167,28 @@ export default function TrackingView() {
       return p;
     }));
 
-    // Update Supabase
-    const { error } = await supabase
-      .from('matches')
-      .upsert({
-        name: person.name,
-        phone: person.phone,
-        age: person.age,
-        points: person.score,
-        tracking: newTracking
-      }, { onConflict: 'phone' });
+    if (person.db_id) {
+      // Atualiza o registro existente usando o ID do banco
+      const { error } = await supabase
+        .from('matches')
+        .update({ tracking: newTracking })
+        .eq('id', person.db_id);
 
-    if (error) console.error('Error syncing tracking:', error);
+      if (error) console.error('Error updating tracking:', error);
+    } else {
+      // Anna e outros da lista inicial que ainda não existem no banco são inseridos
+      const { error } = await supabase
+        .from('matches')
+        .insert([{
+          name: person.name,
+          phone: person.phone,
+          age: person.age,
+          points: person.score,
+          tracking: newTracking
+        }]);
+
+      if (error) console.error('Error inserting tracking:', error);
+    }
   };
 
   const calculateProgress = (tracking) => {
