@@ -77,21 +77,35 @@ export default function TrackingView() {
     }))];
 
     dbMatches.forEach(dbPerson => {
-      const index = merged.findIndex(p => p.phone === dbPerson.phone || (p.name === dbPerson.name && p.age === dbPerson.age));
+      const cleanDbPhone = dbPerson.phone?.replace(/\D/g, '') || '';
       
-      const personData = {
-        name: dbPerson.name,
-        age: dbPerson.age,
-        score: dbPerson.points,
-        phone: dbPerson.phone,
-        link: `https://wa.me/${dbPerson.phone}`,
-        tracking: { ...getDefaultTracking(), ...(dbPerson.tracking || {}) }
-      };
+      const index = merged.findIndex(p => {
+        const cleanPPhone = p.phone?.replace(/\D/g, '') || '';
+        const isSamePhone = (p.phone === dbPerson.phone) || 
+                            (cleanPPhone === cleanDbPhone) || 
+                            (cleanPPhone === `55${cleanDbPhone}`) || 
+                            (`55${cleanPPhone}` === cleanDbPhone);
+        return isSamePhone || (p.name === dbPerson.name && p.age === dbPerson.age);
+      });
 
       if (index !== -1) {
-        merged[index] = { ...merged[index], ...personData, rank: merged[index].rank };
+        // Preserva o nome, link e telefone do INITIAL_BODIES
+        merged[index] = { 
+          ...merged[index], 
+          score: dbPerson.points, 
+          tracking: { ...merged[index].tracking, ...(dbPerson.tracking || {}) }
+        };
       } else {
-        merged.push({ ...personData, rank: dbPerson.id });
+        const phoneWithCountry = cleanDbPhone.startsWith('55') ? cleanDbPhone : `55${cleanDbPhone}`;
+        merged.push({ 
+          name: dbPerson.name,
+          age: dbPerson.age,
+          score: dbPerson.points,
+          phone: dbPerson.phone,
+          link: `https://wa.me/${phoneWithCountry}`,
+          rank: dbPerson.id,
+          tracking: { ...getDefaultTracking(), ...(dbPerson.tracking || {}) }
+        });
       }
     });
 
